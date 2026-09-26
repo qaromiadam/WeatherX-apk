@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Full-Screen Blocking Offline Dialog Layout covering entire screen -->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/offline_fullscreen_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#D907090E"
+    android:clickable="true"
+    android:focusable="true"
+    android:padding="24dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/glass_panel_background"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:padding="28dp">
+
+        <!-- Offline Icon Container -->
+        <FrameLayout
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:background="@drawable/glass_card_background">
+
+            <ImageView
+                android:id="@+id/iv_offline_icon"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_gravity="center"
+                android:contentDescription="@string/offline_title"
+                android:tint="#FB7185" />
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/tv_offline_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:fontFamily="sans-serif-black"
+            android:letterSpacing="0.05"
+            android:text="@string/offline_title"
+            android:textColor="#FFFFFF"
+            android:textSize="17sp" />
+
+        <!-- Mandatory exact message -->
+        <TextView
+            android:id="@+id/tv_offline_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:fontFamily="sans-serif-medium"
+            android:gravity="center"
+            android:lineSpacingExtra="4dp"
+            android:text="@string/no_internet_found"
+            android:textColor="#E2E8F0"
+            android:textSize="14sp" />
+
+        <Button
+            android:id="@+id/btn_offline_retry"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginTop="24dp"
+            android:background="@drawable/glass_button_retry"
+            android:fontFamily="sans-serif-black"
+            android:letterSpacing="0.05"
+            android:text="@string/retry"
+            android:textColor="#080E1C"
+            android:textSize="14sp" />
+
+        <ProgressBar
+            android:id="@+id/pb_offline_checking"
+            style="?android:attr/progressBarStyleSmall"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginTop="12dp"
+            android:indeterminate="true"
+            android:visibility="gone" />
+    </LinearLayout>
+</RelativeLayout>

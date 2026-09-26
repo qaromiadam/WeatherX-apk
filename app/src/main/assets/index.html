@@ -42,24 +42,30 @@
       text-align: right;
     }
 
+    /* Glassmorphism Frosted Glass UI (Translucent alpha tint + corner radii for wallpaper visibility) */
     .glass-panel {
-      background: rgba(13, 19, 34, 0.82);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(14, 23, 42, 0.38);
+      backdrop-filter: blur(24px) saturate(180%);
+      -webkit-backdrop-filter: blur(24px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.32);
+      border-radius: 1.25rem;
     }
 
     .glass-card {
-      background: rgba(19, 28, 48, 0.65);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      border: 1px solid rgba(255, 255, 255, 0.07);
-      transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+      background: rgba(20, 32, 60, 0.32);
+      backdrop-filter: blur(18px) saturate(180%);
+      -webkit-backdrop-filter: blur(18px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.22);
+      border-radius: 1rem;
+      transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
     }
 
     .glass-card:active {
       transform: scale(0.98);
-      border-color: rgba(0, 240, 255, 0.35);
+      border-color: rgba(0, 240, 255, 0.45);
+      background: rgba(20, 32, 60, 0.45);
     }
 
     /* Dynamic Condition Wallpapers */
@@ -73,44 +79,44 @@
 
     .wall-clear-day {
       background:
-        radial-gradient(circle at 80% 12%, rgba(251, 191, 36, 0.25) 0%, transparent 55%),
-        radial-gradient(circle at 20% 85%, rgba(14, 165, 233, 0.18) 0%, transparent 60%),
-        linear-gradient(180deg, #0a1122 0%, #06080e 100%);
+        radial-gradient(circle at 80% 12%, rgba(251, 191, 36, 0.42) 0%, transparent 60%),
+        radial-gradient(circle at 20% 85%, rgba(14, 165, 233, 0.32) 0%, transparent 65%),
+        linear-gradient(180deg, #0c1834 0%, #060912 100%);
     }
 
     .wall-clear-night {
       background:
-        radial-gradient(circle at 75% 15%, rgba(99, 102, 241, 0.22) 0%, transparent 55%),
-        radial-gradient(circle at 25% 75%, rgba(0, 240, 255, 0.10) 0%, transparent 60%),
-        linear-gradient(180deg, #050711 0%, #030408 100%);
+        radial-gradient(circle at 75% 15%, rgba(99, 102, 241, 0.38) 0%, transparent 60%),
+        radial-gradient(circle at 25% 75%, rgba(0, 240, 255, 0.22) 0%, transparent 65%),
+        linear-gradient(180deg, #070b1e 0%, #03040a 100%);
     }
 
     .wall-cloudy {
       background:
-        radial-gradient(circle at 50% 20%, rgba(148, 163, 184, 0.22) 0%, transparent 60%),
-        radial-gradient(circle at 80% 80%, rgba(71, 85, 105, 0.24) 0%, transparent 60%),
-        linear-gradient(180deg, #0b111e 0%, #07090e 100%);
+        radial-gradient(circle at 50% 20%, rgba(148, 163, 184, 0.35) 0%, transparent 65%),
+        radial-gradient(circle at 80% 80%, rgba(71, 85, 105, 0.38) 0%, transparent 65%),
+        linear-gradient(180deg, #0e1728 0%, #070b14 100%);
     }
 
     .wall-rainy {
       background:
-        radial-gradient(circle at 30% 15%, rgba(56, 189, 248, 0.24) 0%, transparent 55%),
-        radial-gradient(circle at 70% 85%, rgba(30, 58, 138, 0.32) 0%, transparent 65%),
-        linear-gradient(180deg, #070d1c 0%, #050711 100%);
+        radial-gradient(circle at 30% 15%, rgba(56, 189, 248, 0.38) 0%, transparent 60%),
+        radial-gradient(circle at 70% 85%, rgba(30, 58, 138, 0.46) 0%, transparent 70%),
+        linear-gradient(180deg, #09142c 0%, #050814 100%);
     }
 
     .wall-stormy {
       background:
-        radial-gradient(circle at 50% 15%, rgba(168, 85, 247, 0.30) 0%, transparent 55%),
-        radial-gradient(circle at 85% 80%, rgba(239, 68, 68, 0.20) 0%, transparent 60%),
-        linear-gradient(180deg, #0f0722 0%, #06030e 100%);
+        radial-gradient(circle at 50% 15%, rgba(168, 85, 247, 0.46) 0%, transparent 60%),
+        radial-gradient(circle at 85% 80%, rgba(239, 68, 68, 0.35) 0%, transparent 65%),
+        linear-gradient(180deg, #150930 0%, #070312 100%);
     }
 
     .wall-snowy {
       background:
-        radial-gradient(circle at 50% 20%, rgba(224, 242, 254, 0.26) 0%, transparent 60%),
-        radial-gradient(circle at 80% 80%, rgba(186, 230, 253, 0.15) 0%, transparent 60%),
-        linear-gradient(180deg, #091325 0%, #050810 100%);
+        radial-gradient(circle at 50% 20%, rgba(224, 242, 254, 0.42) 0%, transparent 65%),
+        radial-gradient(circle at 80% 80%, rgba(186, 230, 253, 0.25) 0%, transparent 65%),
+        linear-gradient(180deg, #0b1a34 0%, #050a16 100%);
     }
 
     /* Custom scrollbars */
@@ -125,6 +131,91 @@
       background: rgba(255, 255, 255, 0.12);
       border-radius: 4px;
     }
+  
+    /* Dark & Light Mode Theme Support (Requirement 2) */
+    html.light body {
+      background-color: #f1f5f9 !important;
+      color: #0f172a !important;
+    }
+
+    html.light .glass-panel {
+      background: rgba(255, 255, 255, 0.76) !important;
+      border: 1px solid rgba(0, 0, 0, 0.08) !important;
+      box-shadow: 0 8px 32px 0 rgba(15, 23, 42, 0.08) !important;
+    }
+
+    html.light .glass-card {
+      background: rgba(255, 255, 255, 0.68) !important;
+      border: 1px solid rgba(0, 0, 0, 0.07) !important;
+      box-shadow: 0 4px 20px 0 rgba(15, 23, 42, 0.05) !important;
+    }
+
+    html.light .text-white {
+      color: #0f172a !important;
+    }
+
+    html.light .text-slate-200 {
+      color: #1e293b !important;
+    }
+
+    html.light .text-slate-300 {
+      color: #334155 !important;
+    }
+
+    html.light .text-slate-400 {
+      color: #64748b !important;
+    }
+
+    html.light .bg-slate-900\/60,
+    html.light .bg-black\/80,
+    html.light .bg-black\/40 {
+      background-color: rgba(241, 245, 249, 0.88) !important;
+    }
+
+    html.light #detail-overlay {
+      background: rgba(241, 245, 249, 0.88) !important;
+    }
+
+    html.light #settings-modal {
+      background: rgba(15, 23, 42, 0.40) !important;
+    }
+
+    html.light #onboarding-fullscreen-view {
+      background-color: #f8fafc !important;
+    }
+
+    html.light #fullscreen-wind-map-view {
+      background-color: #e2e8f0 !important;
+    }
+
+    html.light .wall-clear-day {
+      background:
+        radial-gradient(circle at 80% 12%, rgba(251, 191, 36, 0.35) 0%, transparent 60%),
+        radial-gradient(circle at 20% 85%, rgba(14, 165, 233, 0.22) 0%, transparent 65%),
+        linear-gradient(180deg, #dbeafe 0%, #f8fafc 100%) !important;
+    }
+
+    html.light .wall-clear-night {
+      background:
+        radial-gradient(circle at 75% 15%, rgba(99, 102, 241, 0.22) 0%, transparent 60%),
+        radial-gradient(circle at 25% 75%, rgba(0, 240, 255, 0.15) 0%, transparent 65%),
+        linear-gradient(180deg, #e0e7ff 0%, #f1f5f9 100%) !important;
+    }
+
+    html.light .wall-cloudy {
+      background:
+        radial-gradient(circle at 50% 20%, rgba(148, 163, 184, 0.28) 0%, transparent 65%),
+        radial-gradient(circle at 80% 80%, rgba(71, 85, 105, 0.20) 0%, transparent 65%),
+        linear-gradient(180deg, #e2e8f0 0%, #f8fafc 100%) !important;
+    }
+
+    html.light .wall-rainy {
+      background:
+        radial-gradient(circle at 30% 15%, rgba(56, 189, 248, 0.30) 0%, transparent 60%),
+        radial-gradient(circle at 70% 85%, rgba(30, 58, 138, 0.25) 0%, transparent 70%),
+        linear-gradient(180deg, #bae6fd 0%, #f1f5f9 100%) !important;
+    }
+
   </style>
 </head>
 <body class="selection:bg-cyan-500 selection:text-black">
@@ -437,8 +528,8 @@
     </footer>
   </div>
 
-  <!-- FULL INTERFACE OVERLAYS CONTAINER (Requirement 4: ONLY ONE SINGLE BACK BUTTON AT THE TOP) -->
-  <div id="detail-overlay" class="hidden fixed inset-0 z-50 overflow-y-auto bg-[#070a13]/95 backdrop-blur-2xl p-4 transition-all">
+  <!-- FULL INTERFACE OVERLAYS CONTAINER (Frosted glass overlay with wallpaper visibility) -->
+  <div id="detail-overlay" class="hidden fixed inset-0 z-50 overflow-y-auto bg-[#070a13]/60 backdrop-blur-2xl p-4 transition-all">
     <div class="max-w-md mx-auto min-h-screen py-2">
       
       <!-- Overlay Header with ONLY ONE SINGLE BACK BUTTON (No secondary X or bottom dismiss) -->
@@ -492,12 +583,15 @@
         </div>
       </div>
 
-      <!-- 2. Language Toggle (English / Arabic) -->
+      <!-- 2. Language Toggle (English / Français / العربية) -->
       <div>
         <label class="text-xs font-semibold text-slate-300 block mb-2" data-i18n="language">Language</label>
-        <div class="grid grid-cols-2 gap-2">
+        <div class="grid grid-cols-3 gap-2">
           <button id="setting-lang-en" class="py-2.5 rounded-xl text-xs font-bold border transition-all">
             English
+          </button>
+          <button id="setting-lang-fr" class="py-2.5 rounded-xl text-xs font-bold border transition-all">
+            Français
           </button>
           <button id="setting-lang-ar" class="py-2.5 rounded-xl text-xs font-bold border transition-all font-sans">
             العربية
@@ -505,13 +599,32 @@
         </div>
       </div>
 
-      <!-- 3. App Info (About Section) -->
+      <!-- 3. Theme Toggle (Requirement 2: Dark & Light Mode) -->
+      <div>
+        <label class="text-xs font-semibold text-slate-300 block mb-2" data-i18n="theme">Theme</label>
+        <div class="grid grid-cols-2 gap-2">
+          <button id="setting-theme-dark" class="py-2.5 rounded-xl text-xs font-bold border transition-all flex items-center justify-center gap-2">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+            </svg>
+            <span data-i18n="dark">Dark</span>
+          </button>
+          <button id="setting-theme-light" class="py-2.5 rounded-xl text-xs font-bold border transition-all flex items-center justify-center gap-2">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+            </svg>
+            <span data-i18n="light">Light</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 4. App Info (About Section) -->
       <div class="pt-3 border-t border-white/10 space-y-2 text-xs">
         <h4 class="font-bold text-white uppercase tracking-wider text-[11px]" data-i18n="aboutApp">About weatherX</h4>
         <div class="glass-card rounded-xl p-3 border border-white/5 space-y-1.5 text-[11px] text-slate-300">
           <div class="flex justify-between">
             <span class="text-slate-400" data-i18n="appVersion">Version</span>
-            <span class="font-mono font-bold text-white">2.4.0</span>
+            <span class="font-mono font-bold text-white">2.0</span>
           </div>
           <div class="flex justify-between">
             <span class="text-slate-400" data-i18n="architecture">Architecture</span>
@@ -530,19 +643,157 @@
     </div>
   </div>
 
+  <!-- FULL-SCREEN BLOCKING OFFLINE OVERLAY (Requirement 3: covers entire screen, blocks main UI) -->
+  <div id="fullscreen-offline-overlay" class="hidden fixed inset-0 z-[100] flex flex-col items-center justify-center bg-black/85 backdrop-blur-2xl p-5 select-none" style="touch-action: none;">
+    <div class="glass-panel w-full max-w-sm rounded-3xl p-7 border border-rose-500/40 shadow-2xl flex flex-col items-center text-center space-y-5 animate-in fade-in zoom-in-95 duration-200">
+      
+      <!-- Pulsing Glow Ring and Icon -->
+      <div class="relative flex items-center justify-center">
+        <div class="absolute w-20 h-20 rounded-full bg-rose-500/25 animate-ping opacity-60"></div>
+        <div class="w-16 h-16 rounded-2xl bg-rose-500/20 border border-rose-500/40 flex items-center justify-center text-rose-400 shadow-xl shadow-rose-950/60 relative z-10">
+          <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636a9 9 0 010 12.728m0 0l-2.829-2.829m2.829 2.829L21 21M15.536 8.464a5 5 0 010 7.072m0 0l-2.829-2.829m-4.243 4.243a9 9 0 01-2.828-6.364m0 0l2.828 2.828M3 3l18 18" />
+          </svg>
+        </div>
+      </div>
+
+      <!-- Offline Text Block with Mandatory Localized Message -->
+      <div class="space-y-2">
+        <h2 id="fs-offline-title" class="text-xs font-bold text-slate-300 tracking-wider uppercase font-mono" data-i18n="offlineTitle">
+          Offline Mode
+        </h2>
+        <p id="fs-offline-message" class="text-base font-semibold text-white leading-snug px-1" data-i18n="noInternetFound">
+          No internet found, please try again
+        </p>
+      </div>
+
+      <!-- Prominent Retry Button that tests connection again -->
+      <button id="fs-retry-btn" class="w-full py-3.5 px-6 rounded-2xl text-sm font-bold bg-cyan-400 hover:bg-cyan-300 active:scale-95 text-slate-950 flex items-center justify-center gap-2.5 shadow-lg shadow-cyan-400/25 transition-all">
+        <svg id="fs-retry-spinner" class="w-4 h-4 hidden animate-spin text-slate-950" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+        </svg>
+        <span id="fs-retry-btn-label" data-i18n="retry">Retry</span>
+      </button>
+
+      <p id="fs-offline-status" class="text-[11px] text-rose-300/90 hidden font-medium"></p>
+    </div>
+  </div>
+
+  <!-- FIRST-TIME FULL-SCREEN ONBOARDING VIEW (Requirement 1) -->
+  <div id="onboarding-fullscreen-view" class="hidden fixed inset-0 z-[70] bg-[#07090e] flex flex-col p-6 overflow-y-auto">
+    <div class="max-w-md w-full mx-auto my-auto py-8 flex flex-col items-center text-center space-y-6">
+      
+      <!-- Brand & Welcome Hero -->
+      <div class="space-y-3">
+        <div class="w-16 h-16 mx-auto rounded-3xl bg-cyan-500/15 border border-cyan-500/30 flex items-center justify-center text-cyan-400 shadow-xl shadow-cyan-950/40">
+          <svg class="w-9 h-9" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 00-9.78 2.096A4.001 4.001 0 003 15z" />
+          </svg>
+        </div>
+        <h1 class="text-3xl font-black tracking-tight text-white">weatherX</h1>
+        <!-- EXACT SPECIFIED REQUIREMENT TEXT -->
+        <p class="text-base text-slate-300 font-medium leading-relaxed px-2">
+          Search your city, town, or country to start fetching data! Search and select where you live!
+        </p>
+      </div>
+
+      <!-- Search Box (autocomplete suggestions disabled) -->
+      <div class="w-full relative">
+        <div class="relative flex items-center">
+          <svg class="w-5 h-5 absolute left-3.5 rtl:left-auto rtl:right-3.5 text-slate-400 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+          <input
+            id="onboarding-search-input"
+            type="text"
+            autocomplete="off"
+            autocorrect="off"
+            autocapitalize="off"
+            spellcheck="false"
+            placeholder="Search city, town, or country..."
+            class="w-full h-13 pl-11 pr-10 rtl:pl-10 rtl:pr-11 rounded-2xl glass-card text-sm text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-400/50 transition-all font-medium border border-white/15"
+          />
+          <button id="onboarding-clear-search-btn" class="hidden absolute right-3 rtl:right-auto rtl:left-3 text-slate-400 hover:text-white p-1">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <!-- Search Results List -->
+        <div id="onboarding-search-results-list" class="mt-3 max-h-72 overflow-y-auto space-y-1.5 rounded-2xl glass-panel p-2 border border-white/10 hidden shadow-2xl"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- INTERACTIVE FULL-SCREEN WIND MAP (Requirement 3) -->
+  <div id="fullscreen-wind-map-view" class="hidden fixed inset-0 z-[60] bg-[#060a14] flex flex-col select-none touch-none">
+    
+    <!-- Top Header Bar with "X" Close Button -->
+    <div class="flex items-center justify-between px-4 py-3 border-b border-white/10 bg-black/40 backdrop-blur-md shrink-0 z-10">
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-xl bg-cyan-500/20 border border-cyan-500/30 flex items-center justify-center text-cyan-300">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+          </svg>
+        </div>
+        <div>
+          <h3 class="text-xs font-bold uppercase tracking-wider text-white">Global Wind Map</h3>
+          <p class="text-[10px] text-slate-400">1 finger: Pan · 2 fingers: Zoom · Click: Select region</p>
+        </div>
+      </div>
+
+      <!-- Prominent "X" Button so user can return to wind data screen -->
+      <button id="close-fs-wind-map-btn" class="w-9 h-9 rounded-xl glass-card flex items-center justify-center text-slate-300 hover:text-white border border-white/20 active:scale-95 transition-all" title="Return to Wind Screen">
+        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Full-Screen Wind Map Canvas Container -->
+    <div id="fs-canvas-container" class="relative flex-1 w-full h-full overflow-hidden bg-[#050811]">
+      <canvas id="fullscreen-wind-canvas" class="w-full h-full block cursor-crosshair"></canvas>
+
+      <!-- Interactive Zoom & Reset Buttons -->
+      <div class="absolute top-4 right-4 rtl:right-auto rtl:left-4 flex flex-col gap-2 z-10">
+        <button id="fs-wind-zoom-in" class="w-9 h-9 rounded-xl glass-card flex items-center justify-center text-white border border-white/20 active:scale-95 text-lg font-bold shadow-lg" title="Zoom In">+</button>
+        <button id="fs-wind-zoom-out" class="w-9 h-9 rounded-xl glass-card flex items-center justify-center text-white border border-white/20 active:scale-95 text-lg font-bold shadow-lg" title="Zoom Out">−</button>
+        <button id="fs-wind-reset" class="w-9 h-9 rounded-xl glass-card flex items-center justify-center text-cyan-300 border border-white/20 active:scale-95 text-xs font-mono shadow-lg" title="Reset View">1x</button>
+      </div>
+
+      <!-- Floating Bottom Region Inspection Card -->
+      <div id="fs-wind-inspection-card" class="absolute bottom-4 left-4 right-4 max-w-md mx-auto glass-panel rounded-2xl p-3.5 border border-white/15 shadow-2xl flex items-center justify-between gap-3 z-10">
+        <div class="overflow-hidden">
+          <div class="flex items-center gap-2">
+            <span id="fs-wind-region-name" class="text-xs font-bold text-white truncate">Tap map to select a region</span>
+            <span id="fs-wind-pill" class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">WIND</span>
+          </div>
+          <div id="fs-wind-coords" class="text-[10px] text-slate-300 font-mono mt-0.5">Global Wind Simulation</div>
+        </div>
+        <button id="fs-wind-select-btn" class="hidden px-3.5 py-2 rounded-xl text-xs font-bold bg-cyan-400 hover:bg-cyan-300 text-slate-950 shrink-0 active:scale-95 transition-all shadow-md">
+          Select Region
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Vanilla JavaScript Application Engine -->
   <script>
     (function () {
       "use strict";
 
-      // Translations Dictionary (English & Arabic)
-      // Note: Proper city names and location results are kept in their original spelling as required!
+      // Translations Dictionary (English, French & Arabic)
       const i18n = {
         en: {
           searchPlaceholder: "Search any town, region, or world city...",
           noLocationsFound: "No locations found.",
-          noInternet: "No internet found, please connect to internet and try again",
-          retry: "Retry Connection",
+          noInternetFound: "No internet found, please try again",
+          noInternet: "No internet found, please try again",
+          retry: "Retry",
+          offlineTitle: "Offline Mode",
           details: "Details",
           feelsLike: "Feels like",
           highLabel: "H:",
@@ -558,6 +809,9 @@
           settings: "Settings",
           tempUnit: "Temperature Unit",
           language: "Language",
+          theme: "Theme",
+          dark: "Dark",
+          light: "Light",
           aboutApp: "About weatherX",
           appVersion: "Version",
           architecture: "Architecture",
@@ -594,11 +848,74 @@
           today: "Today",
           now: "Now"
         },
+        fr: {
+          searchPlaceholder: "Rechercher une ville, région ou commune...",
+          noLocationsFound: "Aucun lieu trouvé.",
+          noInternetFound: "Aucune connexion Internet trouvée, veuillez réessayer",
+          noInternet: "Aucune connexion Internet trouvée, veuillez réessayer",
+          retry: "Réessayer",
+          offlineTitle: "Mode hors ligne",
+          details: "Détails",
+          feelsLike: "Ressenti",
+          highLabel: "Max :",
+          lowLabel: "Min :",
+          wind: "Vent",
+          uvIndex: "Indice UV",
+          humidity: "Humidité",
+          moonPhase: "Phase de lune",
+          outdoorSafety: "Sécurité extérieure",
+          forecast7Day: "Prévisions sur 7 jours",
+          highLow: "Max / Min",
+          back: "Retour",
+          settings: "Paramètres",
+          tempUnit: "Unité de température",
+          language: "Langue",
+          theme: "Thème",
+          dark: "Sombre",
+          light: "Clair",
+          aboutApp: "À propos de weatherX",
+          appVersion: "Version",
+          architecture: "Architecture",
+          dataSource: "Source de données",
+          geocoding: "Géocodage",
+          sunProtection: "Protection solaire",
+          tapDetails: "Voir ›",
+          safeTitle: "Favorable aux sorties",
+          safeDesc: "Conditions idéales pour les loisirs, la course et les trajets.",
+          stormTitle: "Alerte aux orages",
+          stormDesc: "Risque de foudre. Abritez-vous immédiatement à l'intérieur.",
+          windTitle: "Alerte vents violents",
+          windDesc: "Rafales fortes détectées. Sécurisez les objets extérieurs.",
+          heatTitle: "Alerte canicule",
+          heatDesc: "Risque d'insolation. Hydratez-vous et évitez le soleil direct.",
+          freezeTitle: "Alerte gel",
+          freezeDesc: "Températures proches du gel. Portez des vêtements chauds.",
+          rainTitle: "Averses de pluie",
+          rainDesc: "Chaussées mouillées et visibilité réduite. Prenez un parapluie.",
+          breezyTitle: "Conditions venteuses",
+          breezyDesc: "Brise sensible. Adapté aux activités calmes.",
+          clearSky: "Ciel dégagé",
+          clearNight: "Nuit claire",
+          partlyCloudy: "Partiellement nuageux",
+          scatteredClouds: "Éclaircies",
+          overcast: "Couvert",
+          fogHaze: "Brouillard & brume",
+          drizzle: "Bruine légère",
+          rainShowers: "Averses de pluie",
+          snowfall: "Chutes de neige",
+          heavyRain: "Pluie forte",
+          thunderstorm: "Orage",
+          fairWeather: "Beau temps",
+          today: "Aujourd'hui",
+          now: "Maintenant"
+        },
         ar: {
           searchPlaceholder: "ابحث عن أي مدينة أو ولاية أو منطقة...",
           noLocationsFound: "لم يتم العثور على مواقع.",
-          noInternet: "لم يتم العثور على اتصال بالإنترنت، يرجى الاتصال بالإنترنت والمحاولة مرة أخرى",
+          noInternetFound: "لم يتم العثور على اتصال بالإنترنت، يرجى المحاولة مرة أخرى",
+          noInternet: "لم يتم العثور على اتصال بالإنترنت، يرجى المحاولة مرة أخرى",
           retry: "إعادة المحاولة",
+          offlineTitle: "وضع عدم الاتصال",
           details: "تفاصيل",
           feelsLike: "الإحساس الحقيقي",
           highLabel: "ع:",
@@ -614,6 +931,9 @@
           settings: "الإعدادات",
           tempUnit: "وحدة الحرارة",
           language: "اللغة",
+          theme: "المظهر",
+          dark: "داكن",
+          light: "فاتح",
           aboutApp: "حول weatherX",
           appVersion: "الإصدار",
           architecture: "البنية البرمجية",
@@ -666,7 +986,8 @@
       const state = {
         city: JSON.parse(localStorage.getItem("wx_selected_city") || JSON.stringify(DEFAULT_CITY)),
         tempUnit: localStorage.getItem("wx_unit") || "c", // 'c' or 'f'
-        lang: localStorage.getItem("wx_lang") || "en", // 'en' or 'ar'
+        lang: localStorage.getItem("wx_lang") || "en", // 'en', 'fr', 'ar'
+        theme: localStorage.getItem("wx_theme") || "dark", // 'dark' or 'light'
         weatherData: null,
         activeOverlay: null,
         isOffline: false
@@ -683,7 +1004,30 @@
         settingUnitC: document.getElementById("setting-unit-c"),
         settingUnitF: document.getElementById("setting-unit-f"),
         settingLangEn: document.getElementById("setting-lang-en"),
+        settingLangFr: document.getElementById("setting-lang-fr"),
         settingLangAr: document.getElementById("setting-lang-ar"),
+        fullscreenOfflineOverlay: document.getElementById("fullscreen-offline-overlay"),
+        fsOfflineTitle: document.getElementById("fs-offline-title"),
+        fsOfflineMessage: document.getElementById("fs-offline-message"),
+        fsRetryBtn: document.getElementById("fs-retry-btn"),
+        fsRetryBtnLabel: document.getElementById("fs-retry-btn-label"),
+        fsRetrySpinner: document.getElementById("fs-retry-spinner"),
+        fsOfflineStatus: document.getElementById("fs-offline-status"),
+        settingThemeDark: document.getElementById("setting-theme-dark"),
+        settingThemeLight: document.getElementById("setting-theme-light"),
+        onboardingView: document.getElementById("onboarding-fullscreen-view"),
+        onboardingSearchInput: document.getElementById("onboarding-search-input"),
+        onboardingClearSearchBtn: document.getElementById("onboarding-clear-search-btn"),
+        onboardingSearchResultsList: document.getElementById("onboarding-search-results-list"),
+        fullscreenWindMapView: document.getElementById("fullscreen-wind-map-view"),
+        fullscreenWindCanvas: document.getElementById("fullscreen-wind-canvas"),
+        closeFsWindMapBtn: document.getElementById("close-fs-wind-map-btn"),
+        fsWindZoomIn: document.getElementById("fs-wind-zoom-in"),
+        fsWindZoomOut: document.getElementById("fs-wind-zoom-out"),
+        fsWindReset: document.getElementById("fs-wind-reset"),
+        fsWindRegionName: document.getElementById("fs-wind-region-name"),
+        fsWindCoords: document.getElementById("fs-wind-coords"),
+        fsWindSelectBtn: document.getElementById("fs-wind-select-btn"),
         searchInput: document.getElementById("global-search-input"),
         searchResultsDropdown: document.getElementById("search-results-dropdown"),
         searchResultsList: document.getElementById("search-results-list"),
@@ -744,9 +1088,24 @@
         return (i18n[state.lang] && i18n[state.lang][key]) || (i18n.en[key] || key);
       }
 
+      function loc(en, fr, ar) {
+        if (state.lang === "ar") return ar;
+        if (state.lang === "fr") return fr;
+        return en;
+      }
+
       function updateUITexts() {
         document.documentElement.lang = state.lang;
-        document.documentElement.dir = state.lang === "ar" ? "rtl" : "ltr";
+        const isRtl = state.lang === "ar";
+        document.documentElement.dir = isRtl ? "rtl" : "ltr";
+
+        // Dynamically apply RTL layout direction on Android View
+        if (window.AndroidInterface && typeof window.AndroidInterface.setLayoutDirectionRtl === "function") {
+          window.AndroidInterface.setLayoutDirectionRtl(isRtl);
+        }
+        if (window.AndroidInterface && typeof window.AndroidInterface.onLanguageChanged === "function") {
+          window.AndroidInterface.onLanguageChanged(state.lang);
+        }
 
         // Update all elements with data-i18n
         document.querySelectorAll("[data-i18n]").forEach(node => {
@@ -756,10 +1115,12 @@
           }
         });
 
-        // Search input placeholder
+        // Search input placeholder & labels
         el.searchInput.placeholder = t("searchPlaceholder");
-        el.offlineErrorMessage.textContent = t("noInternet");
-        el.retryBtnLabel.textContent = t("retry");
+        if (el.offlineErrorMessage) el.offlineErrorMessage.textContent = t("noInternetFound");
+        if (el.retryBtnLabel) el.retryBtnLabel.textContent = t("retry");
+        if (el.fsOfflineMessage) el.fsOfflineMessage.textContent = t("noInternetFound");
+        if (el.fsRetryBtnLabel) el.fsRetryBtnLabel.textContent = t("retry");
 
         // Update settings modal button styles
         updateSettingsModalStyles();
@@ -780,14 +1141,45 @@
           el.settingUnitC.className = "py-2.5 rounded-xl text-xs font-bold border bg-white/5 text-slate-400 border-white/10 hover:border-white/20";
         }
 
-        // Language active style
+        // Language active style (English / French / Arabic)
+        const activeClass = "py-2.5 rounded-xl text-xs font-bold border bg-cyan-500/20 text-cyan-300 border-cyan-500/40 shadow-sm";
+        const inactiveClass = "py-2.5 rounded-xl text-xs font-bold border bg-white/5 text-slate-400 border-white/10 hover:border-white/20";
+
         if (state.lang === "en") {
-          el.settingLangEn.className = "py-2.5 rounded-xl text-xs font-bold border bg-cyan-500/20 text-cyan-300 border-cyan-500/40 shadow-sm";
-          el.settingLangAr.className = "py-2.5 rounded-xl text-xs font-bold border bg-white/5 text-slate-400 border-white/10 hover:border-white/20 font-sans";
+          el.settingLangEn.className = activeClass;
+          el.settingLangFr.className = inactiveClass;
+          el.settingLangAr.className = inactiveClass + " font-sans";
+        } else if (state.lang === "fr") {
+          el.settingLangFr.className = activeClass;
+          el.settingLangEn.className = inactiveClass;
+          el.settingLangAr.className = inactiveClass + " font-sans";
         } else {
-          el.settingLangAr.className = "py-2.5 rounded-xl text-xs font-bold border bg-cyan-500/20 text-cyan-300 border-cyan-500/40 shadow-sm font-sans";
-          el.settingLangEn.className = "py-2.5 rounded-xl text-xs font-bold border bg-white/5 text-slate-400 border-white/10 hover:border-white/20";
+          el.settingLangAr.className = activeClass + " font-sans";
+          el.settingLangEn.className = inactiveClass;
+          el.settingLangFr.className = inactiveClass;
         }
+
+        // Theme active styles (Dark / Light)
+        if (el.settingThemeDark && el.settingThemeLight) {
+          if (state.theme === "light") {
+            el.settingThemeLight.className = "py-2.5 rounded-xl text-xs font-bold border bg-cyan-500/20 text-cyan-600 dark:text-cyan-300 border-cyan-500/40 shadow-sm flex items-center justify-center gap-2";
+            el.settingThemeDark.className = "py-2.5 rounded-xl text-xs font-bold border bg-white/5 text-slate-400 border-white/10 hover:border-white/20 flex items-center justify-center gap-2";
+          } else {
+            el.settingThemeDark.className = "py-2.5 rounded-xl text-xs font-bold border bg-cyan-500/20 text-cyan-300 border-cyan-500/40 shadow-sm flex items-center justify-center gap-2";
+            el.settingThemeLight.className = "py-2.5 rounded-xl text-xs font-bold border bg-white/5 text-slate-400 border-white/10 hover:border-white/20 flex items-center justify-center gap-2";
+          }
+        }
+      }
+
+      function applyTheme() {
+        if (state.theme === "light") {
+          document.documentElement.classList.remove("dark");
+          document.documentElement.classList.add("light");
+        } else {
+          document.documentElement.classList.remove("light");
+          document.documentElement.classList.add("dark");
+        }
+        updateSettingsModalStyles();
       }
 
       // WMO Weather Metadata
@@ -955,25 +1347,25 @@
       }
 
       function getBeaufortScale(speedKmh) {
-        if (speedKmh < 1) return { force: 0, desc: state.lang === 'ar' ? 'هدوء' : 'Calm', effect: state.lang === 'ar' ? 'الدخان يرتفع عمودياً' : 'Smoke rises vertically.' };
-        if (speedKmh <= 5) return { force: 1, desc: state.lang === 'ar' ? 'نسيم خفيف جداً' : 'Light Air', effect: state.lang === 'ar' ? 'انحراف خفيف للدخان' : 'Smoke drift indicates direction.' };
-        if (speedKmh <= 11) return { force: 2, desc: state.lang === 'ar' ? 'نسيم عليل' : 'Light Breeze', effect: state.lang === 'ar' ? 'حركة خفيفة لأوراق الشجر' : 'Wind felt on face; leaves rustle.' };
-        if (speedKmh <= 19) return { force: 3, desc: state.lang === 'ar' ? 'نسيم لطيف' : 'Gentle Breeze', effect: state.lang === 'ar' ? 'حركة مستمرة للأغصان' : 'Leaves and small twigs in motion.' };
-        if (speedKmh <= 28) return { force: 4, desc: state.lang === 'ar' ? 'نسيم معتدل' : 'Moderate Breeze', effect: state.lang === 'ar' ? 'حركة الأغصان وتطاير الغبار' : 'Small branches move, dust raised.' };
-        if (speedKmh <= 38) return { force: 5, desc: state.lang === 'ar' ? 'نسيم نشط' : 'Fresh Breeze', effect: state.lang === 'ar' ? 'تمايل الأشجار الصغيرة' : 'Small trees in leaf begin to sway.' };
-        if (speedKmh <= 49) return { force: 6, desc: state.lang === 'ar' ? 'رياح قوية' : 'Strong Breeze', effect: state.lang === 'ar' ? 'صعوبة استخدام المظلات' : 'Large branches move; umbrella difficult.' };
-        if (speedKmh <= 61) return { force: 7, desc: state.lang === 'ar' ? 'رياح عاتية خفيفة' : 'Near Gale', effect: state.lang === 'ar' ? 'صعوبة السير ضد الرياح' : 'Walking against wind is difficult.' };
-        if (speedKmh <= 74) return { force: 8, desc: state.lang === 'ar' ? 'عاصفة هوائية' : 'Gale', effect: state.lang === 'ar' ? 'تكسر بعض الأغصان' : 'Twigs break off trees; progress impeded.' };
-        return { force: 9, desc: state.lang === 'ar' ? 'عاصفة شديدة' : 'Strong Gale', effect: state.lang === 'ar' ? 'أضرار سطحية محتملة' : 'Slight structural damage occurs.' };
+        if (speedKmh < 1) return { force: 0, desc: loc('Calm', 'Calme', 'هدوء'), effect: loc('Smoke rises vertically.', 'La fumée s\'élève verticalement.', 'الدخان يرتفع عمودياً') };
+        if (speedKmh <= 5) return { force: 1, desc: loc('Light Air', 'Très légère brise', 'نسيم خفيف جداً'), effect: loc('Smoke drift indicates direction.', 'La fumée indique la direction.', 'انحراف خفيف للدخان') };
+        if (speedKmh <= 11) return { force: 2, desc: loc('Light Breeze', 'Légère brise', 'نسيم عليل'), effect: loc('Wind felt on face; leaves rustle.', 'Le vent se fait sentir sur le visage.', 'حركة خفيفة لأوراق الشجر') };
+        if (speedKmh <= 19) return { force: 3, desc: loc('Gentle Breeze', 'Petite brise', 'نسيم لطيف'), effect: loc('Leaves and small twigs in motion.', 'Feuilles et petites branches bougent.', 'حركة مستمرة للأغصان') };
+        if (speedKmh <= 28) return { force: 4, desc: loc('Moderate Breeze', 'Jolie brise', 'نسيم معتدل'), effect: loc('Small branches move, dust raised.', 'Petites branches s\'agitent, poussière levée.', 'حركة الأغصان وتطاير الغبار') };
+        if (speedKmh <= 38) return { force: 5, desc: loc('Fresh Breeze', 'Bonne brise', 'نسيم نشط'), effect: loc('Small trees in leaf begin to sway.', 'Petits arbres commencent à osciller.', 'تمايل الأشجار الصغيرة') };
+        if (speedKmh <= 49) return { force: 6, desc: loc('Strong Breeze', 'Vent frais', 'رياح قوية'), effect: loc('Large branches move; umbrella difficult.', 'Grandes branches en mouvement, parapluie difficile.', 'صعوبة استخدام المظلات') };
+        if (speedKmh <= 61) return { force: 7, desc: loc('Near Gale', 'Grand frais', 'رياح عاتية خفيفة'), effect: loc('Walking against wind is difficult.', 'Marcher contre le vent est difficile.', 'صعوبة السير ضد الرياح') };
+        if (speedKmh <= 74) return { force: 8, desc: loc('Gale', 'Coup de vent', 'عاصفة هوائية'), effect: loc('Twigs break off trees; progress impeded.', 'Branches cassées, progression ralentie.', 'تكسر بعض الأغصان') };
+        return { force: 9, desc: loc('Strong Gale', 'Fort coup de vent', 'عاصفة شديدة'), effect: loc('Slight structural damage occurs.', 'Légers dégâts aux toitures possibles.', 'أضرار سطحية محتملة') };
       }
 
       // UV Index Analysis
       function getUVLevel(uv) {
-        if (uv <= 2) return { text: state.lang === 'ar' ? 'منخفض' : 'Low', color: 'text-emerald-400', bg: 'bg-emerald-400', advice: state.lang === 'ar' ? 'حماية طفيفة مطلوبة' : 'Minimal sun protection required.' };
-        if (uv <= 5) return { text: state.lang === 'ar' ? 'متوسط' : 'Moderate', color: 'text-amber-400', bg: 'bg-amber-400', advice: state.lang === 'ar' ? 'استخدم واقي الشمس والنظارات' : 'Wear sunscreen & sunglasses.' };
-        if (uv <= 7) return { text: state.lang === 'ar' ? 'مرتفع' : 'High', color: 'text-orange-400', bg: 'bg-orange-400', advice: state.lang === 'ar' ? 'الحماية ضرورية وقت الظهيرة' : 'Protection essential; seek shade.' };
-        if (uv <= 10) return { text: state.lang === 'ar' ? 'مرتفع جداً' : 'Very High', color: 'text-rose-400', bg: 'bg-rose-400', advice: state.lang === 'ar' ? 'تجنب أشعة الشمس المباشرة' : 'Take extra precautions; avoid sun.' };
-        return { text: state.lang === 'ar' ? 'شديد الخطورة' : 'Extreme', color: 'text-purple-400', bg: 'bg-purple-400', advice: state.lang === 'ar' ? 'ابق في الظل وتجنب الخروج' : 'Stay indoors or in full shade!' };
+        if (uv <= 2) return { text: loc('Low', 'Faible', 'منخفض'), color: 'text-emerald-400', bg: 'bg-emerald-400', advice: loc('Minimal sun protection required.', 'Protection solaire minime requise.', 'حماية طفيفة مطلوبة') };
+        if (uv <= 5) return { text: loc('Moderate', 'Modéré', 'متوسط'), color: 'text-amber-400', bg: 'bg-amber-400', advice: loc('Wear sunscreen & sunglasses.', 'Crème solaire et lunettes conseillées.', 'استخدم واقي الشمس والنظارات') };
+        if (uv <= 7) return { text: loc('High', 'Élevé', 'مرتفع'), color: 'text-orange-400', bg: 'bg-orange-400', advice: loc('Protection essential; seek shade.', 'Protection essentielle, cherchez l\'ombre.', 'الحماية ضرورية وقت الظهيرة') };
+        if (uv <= 10) return { text: loc('Very High', 'Très élevé', 'مرتفع جداً'), color: 'text-rose-400', bg: 'bg-rose-400', advice: loc('Take extra precautions; avoid sun.', 'Précautions accrues, évitez le soleil.', 'تجنب أشعة الشمس المباشرة') };
+        return { text: loc('Extreme', 'Extrême', 'شديد الخطورة'), color: 'text-purple-400', bg: 'bg-purple-400', advice: loc('Stay indoors or in full shade!', 'Restez à l\'intérieur ou à l\'ombre !', 'ابق في الظل وتجنب الخروج') };
       }
 
       // Moon Phase Calculator
@@ -1000,28 +1392,21 @@
         const illumination = Math.round((1 - Math.cos(jd * 2 * Math.PI)) / 2 * 100);
 
         const phaseNamesEn = [
-          "New Moon",
-          "Waxing Crescent",
-          "First Quarter",
-          "Waxing Gibbous",
-          "Full Moon",
-          "Waning Gibbous",
-          "Last Quarter",
-          "Waning Crescent"
+          "New Moon", "Waxing Crescent", "First Quarter", "Waxing Gibbous",
+          "Full Moon", "Waning Gibbous", "Last Quarter", "Waning Crescent"
+        ];
+
+        const phaseNamesFr = [
+          "Nouvelle lune", "Premier croissant", "Premier quartier", "Gibbeuse croissante",
+          "Pleine lune", "Gibbeuse décroissante", "Dernier quartier", "Dernier croissant"
         ];
 
         const phaseNamesAr = [
-          "محاق (قمر جديد)",
-          "هلال متزايد",
-          "تربيع أول",
-          "أحدب متزايد",
-          "بدر مكتمل",
-          "أحدب متناقص",
-          "تربيع أخير",
-          "هلال متناقص"
+          "محاق (قمر جديد)", "هلال متزايد", "تربيع أول", "أحدب متزايد",
+          "بدر مكتمل", "أحدب متناقص", "تربيع أخير", "هلال متناقص"
         ];
 
-        const name = state.lang === 'ar' ? phaseNamesAr[phaseIndex] : phaseNamesEn[phaseIndex];
+        const name = state.lang === 'ar' ? phaseNamesAr[phaseIndex] : (state.lang === 'fr' ? phaseNamesFr[phaseIndex] : phaseNamesEn[phaseIndex]);
 
         return {
           name: name,
@@ -1130,34 +1515,90 @@
         }
       }
 
-      // Fetch Weather Data (Requirement 1: Official live parameters from Open-Meteo Forecast API)
-      async function fetchWeather() {
-        el.weatherDesc.textContent = state.lang === 'ar' ? 'جارٍ التحديث...' : 'Updating...';
+      // Full-screen offline overlay controller
+      function showOfflineBlockingOverlay() {
+        if (!el.fullscreenOfflineOverlay) return;
+        el.fsOfflineMessage.textContent = t("noInternetFound");
+        el.fsRetryBtnLabel.textContent = t("retry");
+        el.fsOfflineStatus.classList.add("hidden");
+        el.fullscreenOfflineOverlay.classList.remove("hidden");
+        document.body.style.overflow = "hidden";
+      }
+
+      function hideOfflineBlockingOverlay() {
+        if (!el.fullscreenOfflineOverlay) return;
+        el.fullscreenOfflineOverlay.classList.add("hidden");
+        if (!state.activeOverlay && el.settingsModal.classList.contains("hidden")) {
+          document.body.style.overflow = "";
+        }
+      }
+
+      // Connectivity tester
+      async function isNetworkReachable() {
+        if (window.AndroidInterface && typeof window.AndroidInterface.isNetworkAvailable === "function") {
+          if (!window.AndroidInterface.isNetworkAvailable()) {
+            return false;
+          }
+        }
+        if (typeof navigator.onLine === "boolean" && !navigator.onLine) {
+          return false;
+        }
+        try {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 4000);
+          const probe = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=36.7&longitude=3.0&current=temperature_2m`, {
+            method: "HEAD",
+            cache: "no-store",
+            signal: controller.signal
+          });
+          clearTimeout(timeoutId);
+          return probe.ok;
+        } catch (e) {
+          return false;
+        }
+      }
+
+      // Fetch Weather Data with full-screen offline blocking check (Requirement 3)
+      async function fetchWeather(isUserInitiated = false) {
+        el.weatherDesc.textContent = loc('Updating...', 'Mise à jour...', 'جارٍ التحديث...');
         el.refreshIcon.classList.add("animate-spin");
 
-        // Hide offline box during request attempt
-        el.offlineErrorContainer.classList.add("hidden");
+        // Network connectivity check on launch & refresh
+        if (window.AndroidInterface && typeof window.AndroidInterface.isNetworkAvailable === "function") {
+          if (!window.AndroidInterface.isNetworkAvailable()) {
+            state.isOffline = true;
+            showOfflineBlockingOverlay();
+            el.refreshIcon.classList.remove("animate-spin");
+            return;
+          }
+        } else if (typeof navigator.onLine === "boolean" && !navigator.onLine) {
+          state.isOffline = true;
+          showOfflineBlockingOverlay();
+          el.refreshIcon.classList.remove("animate-spin");
+          return;
+        }
 
         const unitParam = state.tempUnit === "f" ? "&temperature_unit=fahrenheit&wind_speed_unit=mph" : "";
-
-        // Strictly requested Open-Meteo endpoint & parameters
         const url = `https://api.open-meteo.com/v1/forecast?latitude=${state.city.lat}&longitude=${state.city.lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,wind_speed_10m,wind_direction_10m&daily=temperature_2m_max,temperature_2m_min,uv_index_max&timezone=auto${unitParam}`;
 
         try {
-          const res = await fetch(url);
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 9000);
+          const res = await fetch(url, { signal: controller.signal });
+          clearTimeout(timeoutId);
           if (!res.ok) throw new Error("Network request failed");
           const data = await res.json();
           state.weatherData = data;
           state.isOffline = false;
+          hideOfflineBlockingOverlay();
+          el.offlineErrorContainer.classList.add("hidden");
           el.mainWeatherContent.classList.remove("opacity-50");
           renderWeather();
         } catch (err) {
-          // Show clear centered message
           state.isOffline = true;
-          el.weatherDesc.textContent = state.lang === 'ar' ? 'تعذر الاتصال' : 'Connection failed';
-          el.offlineErrorMessage.textContent = t("noInternet");
-          el.offlineErrorContainer.classList.remove("hidden");
-          el.mainWeatherContent.classList.add("opacity-50");
+          // Requirement 3: If no internet connection, display full-screen overlay blocking interaction with UI below
+          showOfflineBlockingOverlay();
+          el.weatherDesc.textContent = loc('Connection failed', 'Échec de connexion', 'تعذر الاتصال');
         } finally {
           el.refreshIcon.classList.remove("animate-spin");
         }
@@ -1330,8 +1771,9 @@
       function renderDailyForecast(daily) {
         if (!daily || !daily.time) return;
         const daysEn = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+        const daysFr = ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"];
         const daysAr = ["الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"];
-        const days = state.lang === "ar" ? daysAr : daysEn;
+        const days = state.lang === "ar" ? daysAr : (state.lang === "fr" ? daysFr : daysEn);
 
         let html = "";
         const count = Math.min(7, daily.time.length);
@@ -1432,8 +1874,9 @@
           }
         } else if (daily && daily.time) {
           const daysEn = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+          const daysFr = ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"];
           const daysAr = ["الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"];
-          const days = state.lang === "ar" ? daysAr : daysEn;
+          const days = state.lang === "ar" ? daysAr : (state.lang === "fr" ? daysFr : daysEn);
           for (let i = 0; i < Math.min(7, daily.time.length); i++) {
             const dateObj = new Date(daily.time[i]);
             const dayName = i === 0 ? t("today") : days[dateObj.getDay()];
@@ -1627,6 +2070,23 @@
 
         // Initialize and animate interactive 2D world wind map (only when overlay is open)
         initWindWorldMap(cur, speed, unit, speedKmh, deg);
+
+        // Requirement 3: When user clicks the wind map, open in full-screen view
+        const windCanvasEl = document.getElementById("world-wind-canvas");
+        if (windCanvasEl) {
+          windCanvasEl.style.cursor = "pointer";
+          windCanvasEl.title = "Tap to open interactive full-screen map";
+          windCanvasEl.onclick = () => openFullscreenWindMap(cur, speed, unit, speedKmh, deg);
+        }
+        const mapContainer = windCanvasEl ? windCanvasEl.parentElement : null;
+        if (mapContainer && !document.getElementById("open-fs-wind-map-btn")) {
+          const expandBtn = document.createElement("button");
+          expandBtn.id = "open-fs-wind-map-btn";
+          expandBtn.className = "absolute top-2 right-2 rtl:right-auto rtl:left-2 px-2.5 py-1 rounded-lg glass-card text-[10px] font-bold text-cyan-300 border border-white/20 active:scale-95 shadow flex items-center gap-1";
+          expandBtn.innerHTML = `<svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg> Full Screen`;
+          expandBtn.onclick = () => openFullscreenWindMap(cur, speed, unit, speedKmh, deg);
+          mapContainer.appendChild(expandBtn);
+        }
       }
 
       function initWindWorldMap(cur, speed, unit, speedKmh, deg) {
@@ -1882,6 +2342,405 @@
         }
 
         windMapAnimId = requestAnimationFrame(animLoop);
+      }
+
+      // =============================================================
+      // REQUIREMENT 3: INTERACTIVE FULL-SCREEN WIND MAP
+      // 1 finger to pan · 2 fingers to zoom · Click to select region · "X" to close
+      // =============================================================
+      let fsWindAnimId = null;
+
+      function openFullscreenWindMap(cur, speed, unit, speedKmh, deg) {
+        if (!el.fullscreenWindMapView || !el.fullscreenWindCanvas) return;
+        el.fullscreenWindMapView.classList.remove("hidden");
+        document.body.style.overflow = "hidden";
+
+        const canvas = el.fullscreenWindCanvas;
+        const ctx = canvas.getContext("2d");
+        const container = canvas.parentElement;
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+        let w = (canvas.width = (container.clientWidth || window.innerWidth) * dpr);
+        let h = (canvas.height = (container.clientHeight || window.innerHeight) * dpr);
+
+        // Transformation state: Pan & Zoom
+        let panX = 0;
+        let panY = 0;
+        let zoom = 1.0;
+
+        // Selected region state
+        let selectedRegion = {
+          lat: state.city.lat,
+          lon: state.city.lon,
+          name: state.city.name,
+          speed: speedKmh,
+          dir: deg
+        };
+
+        function updateSelectedRegionInfo() {
+          const est = estimateWindAt(selectedRegion.lat, selectedRegion.lon);
+          const spdDisplay = state.tempUnit === "f" ? Math.round(est.speed * 0.621371) : est.speed;
+          const card = getCardinalDirection(est.dir);
+          const color = getWindColor(est.speed);
+
+          el.fsWindRegionName.textContent = selectedRegion.name;
+          el.fsWindCoords.textContent = `Lat: ${selectedRegion.lat.toFixed(2)}°, Lon: ${selectedRegion.lon.toFixed(2)}° · ${spdDisplay} ${unit} (${card})`;
+          el.fsWindPill.style.backgroundColor = color.hex + "33";
+          el.fsWindPill.style.color = color.hex;
+          el.fsWindPill.style.borderColor = color.hex + "66";
+          el.fsWindPill.textContent = `${spdDisplay} ${unit}`;
+          el.fsWindSelectBtn.classList.remove("hidden");
+        }
+
+        updateSelectedRegionInfo();
+
+        el.fsWindSelectBtn.onclick = () => {
+          // Select region as current weather city
+          state.city = {
+            name: selectedRegion.name,
+            country: selectedRegion.name.includes("Wilaya") ? "Algeria" : "Selected Region",
+            countryCode: selectedRegion.lon >= -8.6 && selectedRegion.lon <= 12 && selectedRegion.lat >= 19 && selectedRegion.lat <= 37 ? "DZ" : "MAP",
+            region: `Lat ${selectedRegion.lat.toFixed(1)}°, Lon ${selectedRegion.lon.toFixed(1)}°`,
+            lat: Number(selectedRegion.lat.toFixed(4)),
+            lon: Number(selectedRegion.lon.toFixed(4))
+          };
+          localStorage.setItem("wx_selected_city", JSON.stringify(state.city));
+          closeFullscreenWindMap();
+          closeOverlay();
+          fetchWeather(true);
+        };
+
+        // Continents geo path
+        const continents = [
+          [[-168, 65], [-140, 70], [-100, 72], [-65, 62], [-55, 48], [-75, 35], [-80, 25], [-95, 18], [-105, 23], [-120, 34], [-125, 48], [-165, 58]],
+          [[-50, 82], [-20, 80], [-25, 70], [-45, 60], [-55, 70]],
+          [[-78, 10], [-50, -2], [-35, -7], [-40, -22], [-55, -35], [-68, -54], [-75, -45], [-72, -18], [-80, -2]],
+          [[-10, 36], [-5, 44], [5, 48], [15, 55], [25, 71], [15, 68], [10, 56], [2, 51], [-3, 40]],
+          [[-15, 30], [10, 37], [32, 32], [50, 12], [42, -5], [35, -28], [20, -35], [12, -18], [10, 5], [-16, 12]],
+          [[30, 40], [50, 48], [80, 55], [120, 60], [170, 68], [140, 45], [120, 35], [105, 20], [80, 15], [70, 25], [45, 35]],
+          [[70, 22], [80, 28], [90, 24], [100, 15], [105, 10], [98, 2], [82, 8]],
+          [[115, -22], [130, -12], [142, -12], [152, -26], [150, -38], [135, -36], [115, -34]],
+          [[-180, -75], [180, -75], [180, -90], [-180, -90]]
+        ];
+
+        // 120 Wind Stream Particles
+        const fsParticles = [];
+        for (let i = 0; i < 120; i++) {
+          fsParticles.push({
+            x: Math.random() * w,
+            y: Math.random() * h,
+            age: Math.floor(Math.random() * 90),
+            maxAge: 70 + Math.floor(Math.random() * 50)
+          });
+        }
+
+        function lonToX(lon) {
+          return ((lon + 180) / 360) * w;
+        }
+        function latToY(lat) {
+          return ((90 - lat) / 180) * h;
+        }
+        function xToLon(x) {
+          return (x / w) * 360 - 180;
+        }
+        function yToLat(y) {
+          return 90 - (y / h) * 180;
+        }
+
+        // Draw Frame
+        function drawFsMap() {
+          ctx.save();
+          ctx.clearRect(0, 0, w, h);
+
+          // Deep Ocean Background
+          ctx.fillStyle = state.theme === "light" ? "#e0e7ff" : "#050811";
+          ctx.fillRect(0, 0, w, h);
+
+          // Apply Pan & Zoom Transform
+          ctx.translate(panX, panY);
+          ctx.scale(zoom, zoom);
+
+          // Draw Graticule
+          ctx.strokeStyle = state.theme === "light" ? "rgba(0,0,0,0.06)" : "rgba(255,255,255,0.05)";
+          ctx.lineWidth = 1 / zoom;
+          for (let lon = -180; lon <= 180; lon += 30) {
+            ctx.beginPath();
+            ctx.moveTo(lonToX(lon), 0);
+            ctx.lineTo(lonToX(lon), h);
+            ctx.stroke();
+          }
+          for (let lat = -80; lat <= 80; lat += 20) {
+            ctx.beginPath();
+            ctx.moveTo(0, latToY(lat));
+            ctx.lineTo(w, latToY(lat));
+            ctx.stroke();
+          }
+
+          // Draw Continents
+          ctx.fillStyle = state.theme === "light" ? "#cbd5e1" : "rgba(30, 41, 59, 0.75)";
+          ctx.strokeStyle = state.theme === "light" ? "#94a3b8" : "rgba(0, 240, 255, 0.25)";
+          ctx.lineWidth = 1.2 / zoom;
+
+          continents.forEach(poly => {
+            if (!poly.length) return;
+            ctx.beginPath();
+            ctx.moveTo(lonToX(poly[0][0]), latToY(poly[0][1]));
+            for (let i = 1; i < poly.length; i++) {
+              ctx.lineTo(lonToX(poly[i][0]), latToY(poly[i][1]));
+            }
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+          });
+
+          // Draw Stream Particles
+          fsParticles.forEach(p => {
+            const pLon = xToLon(p.x);
+            const pLat = yToLat(p.y);
+            const est = estimateWindAt(pLat, pLon);
+            const rad = (est.dir * Math.PI) / 180;
+            const step = (est.speed / 28) * (1.8 + Math.sin(p.age * 0.1));
+
+            const nx = p.x + Math.sin(rad) * step;
+            const ny = p.y - Math.cos(rad) * step;
+
+            const alpha = Math.sin((p.age / p.maxAge) * Math.PI) * 0.85;
+            const color = getWindColor(est.speed);
+
+            ctx.strokeStyle = `rgba(${color.r}, ${color.g}, ${color.b}, ${alpha})`;
+            ctx.lineWidth = Math.max(1, 2.2 / zoom);
+            ctx.beginPath();
+            ctx.moveTo(p.x, p.y);
+            ctx.lineTo(nx, ny);
+            ctx.stroke();
+
+            p.x = nx;
+            p.y = ny;
+            p.age++;
+
+            if (p.age > p.maxAge || p.x < 0 || p.x > w || p.y < 0 || p.y > h) {
+              p.x = Math.random() * w;
+              p.y = Math.random() * h;
+              p.age = 0;
+            }
+          });
+
+          // Draw Selected Region Target Pin
+          const selX = lonToX(selectedRegion.lon);
+          const selY = latToY(selectedRegion.lat);
+
+          // Pulse ring
+          const ringR = (12 + (Date.now() % 1200) / 70) / zoom;
+          ctx.beginPath();
+          ctx.arc(selX, selY, ringR, 0, Math.PI * 2);
+          ctx.strokeStyle = "rgba(0, 240, 255, 0.4)";
+          ctx.lineWidth = 1.5 / zoom;
+          ctx.stroke();
+
+          // Target Center Dot
+          ctx.beginPath();
+          ctx.arc(selX, selY, 5 / zoom, 0, Math.PI * 2);
+          ctx.fillStyle = "#00f0ff";
+          ctx.fill();
+          ctx.strokeStyle = "#ffffff";
+          ctx.lineWidth = 2 / zoom;
+          ctx.stroke();
+
+          // Location Tag
+          ctx.font = `bold ${Math.max(10, 12 / zoom)}px monospace`;
+          ctx.fillStyle = "#ffffff";
+          ctx.fillText(selectedRegion.name, selX + 10 / zoom, selY - 8 / zoom);
+
+          ctx.restore();
+        }
+
+        function animLoop() {
+          drawFsMap();
+          fsWindAnimId = requestAnimationFrame(animLoop);
+        }
+
+        if (fsWindAnimId) cancelAnimationFrame(fsWindAnimId);
+        fsWindAnimId = requestAnimationFrame(animLoop);
+
+        // -----------------------------------------------------------
+        // TOUCH & MOUSE INTERACTION RULES
+        // 1 finger: Pan / move around
+        // 2 fingers: Zoom in and out
+        // Click / Tap: Select a region
+        // -----------------------------------------------------------
+        let isDragging = false;
+        let lastTouchX = 0;
+        let lastTouchY = 0;
+        let initialPinchDist = null;
+        let initialZoom = 1.0;
+        let movedDistance = 0;
+
+        function getTouchPos(touch) {
+          const rect = canvas.getBoundingClientRect();
+          return {
+            x: ((touch.clientX - rect.left) / rect.width) * w,
+            y: ((touch.clientY - rect.top) / rect.height) * h
+          };
+        }
+
+        // Pointer / Touch Events
+        canvas.ontouchstart = (e) => {
+          e.preventDefault();
+          movedDistance = 0;
+          if (e.touches.length === 1) {
+            isDragging = true;
+            lastTouchX = e.touches[0].clientX;
+            lastTouchY = e.touches[0].clientY;
+          } else if (e.touches.length === 2) {
+            isDragging = false;
+            initialPinchDist = Math.hypot(
+              e.touches[0].clientX - e.touches[1].clientX,
+              e.touches[0].clientY - e.touches[1].clientY
+            );
+            initialZoom = zoom;
+          }
+        };
+
+        canvas.ontouchmove = (e) => {
+          e.preventDefault();
+          // Rule: 1 finger to pan
+          if (e.touches.length === 1 && isDragging) {
+            const dx = (e.touches[0].clientX - lastTouchX) * dpr;
+            const dy = (e.touches[0].clientY - lastTouchY) * dpr;
+            panX += dx;
+            panY += dy;
+            movedDistance += Math.abs(dx) + Math.abs(dy);
+            lastTouchX = e.touches[0].clientX;
+            lastTouchY = e.touches[0].clientY;
+          }
+          // Rule: 2 fingers to zoom
+          else if (e.touches.length === 2 && initialPinchDist) {
+            const currentDist = Math.hypot(
+              e.touches[0].clientX - e.touches[1].clientX,
+              e.touches[0].clientY - e.touches[1].clientY
+            );
+            const scale = currentDist / initialPinchDist;
+            zoom = Math.max(0.7, Math.min(6.0, initialZoom * scale));
+            movedDistance += 50;
+          }
+        };
+
+        canvas.ontouchend = (e) => {
+          e.preventDefault();
+          // Rule: Click to select region (if tap didn't pan significantly)
+          if (movedDistance < 15 && e.changedTouches.length > 0) {
+            const pos = getTouchPos(e.changedTouches[0]);
+            handleRegionSelectAtScreen(pos.x, pos.y);
+          }
+          if (e.touches.length === 0) {
+            isDragging = false;
+            initialPinchDist = null;
+          }
+        };
+
+        // Desktop mouse support for testing & accessibility
+        canvas.onmousedown = (e) => {
+          isDragging = true;
+          movedDistance = 0;
+          lastTouchX = e.clientX;
+          lastTouchY = e.clientY;
+        };
+
+        window.onmousemove = (e) => {
+          if (!isDragging) return;
+          const dx = (e.clientX - lastTouchX) * dpr;
+          const dy = (e.clientY - lastTouchY) * dpr;
+          panX += dx;
+          panY += dy;
+          movedDistance += Math.abs(dx) + Math.abs(dy);
+          lastTouchX = e.clientX;
+          lastTouchY = e.clientY;
+        };
+
+        window.onmouseup = (e) => {
+          if (isDragging) {
+            isDragging = false;
+            if (movedDistance < 8) {
+              const rect = canvas.getBoundingClientRect();
+              const sx = ((e.clientX - rect.left) / rect.width) * w;
+              const sy = ((e.clientY - rect.top) / rect.height) * h;
+              handleRegionSelectAtScreen(sx, sy);
+            }
+          }
+        };
+
+        // Mouse wheel zoom
+        canvas.onwheel = (e) => {
+          e.preventDefault();
+          const zoomFactor = e.deltaY < 0 ? 1.15 : 0.88;
+          zoom = Math.max(0.7, Math.min(6.0, zoom * zoomFactor));
+        };
+
+        // Rule: Click to select a region
+        function handleRegionSelectAtScreen(screenX, screenY) {
+          const worldX = (screenX - panX) / zoom;
+          const worldY = (screenY - panY) / zoom;
+          const lon = Math.max(-180, Math.min(180, xToLon(worldX)));
+          const lat = Math.max(-85, Math.min(85, yToLat(worldY)));
+
+          // Check if near known Algeria wilaya or world region
+          let regionName = `Coordinates (${lat.toFixed(1)}°, ${lon.toFixed(1)}°)`;
+          if (typeof ALGERIA_WILAYAS !== "undefined" && Array.isArray(ALGERIA_WILAYAS)) {
+            let nearest = null;
+            let nearestDist = 999;
+            ALGERIA_WILAYAS.forEach(w => {
+              const d = Math.hypot(w.lat - lat, w.lon - lon);
+              if (d < nearestDist && d < 1.8) {
+                nearestDist = d;
+                nearest = w;
+              }
+            });
+            if (nearest) {
+              regionName = `${nearest.name} Wilaya`;
+            }
+          }
+
+          selectedRegion = {
+            lat,
+            lon,
+            name: regionName,
+            speed: estimateWindAt(lat, lon).speed,
+            dir: estimateWindAt(lat, lon).dir
+          };
+
+          updateSelectedRegionInfo();
+        }
+
+        // On-screen Zoom Buttons
+        el.fsWindZoomIn.onclick = () => {
+          zoom = Math.min(6.0, zoom * 1.3);
+        };
+        el.fsWindZoomOut.onclick = () => {
+          zoom = Math.max(0.7, zoom / 1.3);
+        };
+        el.fsWindReset.onclick = () => {
+          zoom = 1.0;
+          panX = 0;
+          panY = 0;
+        };
+
+        // Rule: Include an "X" button so the user can return to the wind data screen
+        el.closeFsWindMapBtn.onclick = closeFullscreenWindMap;
+      }
+
+      function closeFullscreenWindMap() {
+        if (!el.fullscreenWindMapView) return;
+        if (fsWindAnimId) {
+          cancelAnimationFrame(fsWindAnimId);
+          fsWindAnimId = null;
+        }
+        el.fullscreenWindMapView.classList.add("hidden");
+        // Maintain detail overlay overflow if open
+        if (state.activeOverlay) {
+          document.body.style.overflow = "hidden";
+        } else {
+          document.body.style.overflow = "";
+        }
       }
 
       // 3. UV Index Detail Overlay
@@ -2283,7 +3142,7 @@
         }
       });
 
-      // Settings: Language Toggle
+      // Settings: Language Toggle (English / French / Arabic)
       el.settingLangEn.addEventListener("click", () => {
         if (state.lang !== "en") {
           state.lang = "en";
@@ -2291,6 +3150,16 @@
           updateUITexts();
         }
       });
+
+      if (el.settingLangFr) {
+        el.settingLangFr.addEventListener("click", () => {
+          if (state.lang !== "fr") {
+            state.lang = "fr";
+            localStorage.setItem("wx_lang", "fr");
+            updateUITexts();
+          }
+        });
+      }
 
       el.settingLangAr.addEventListener("click", () => {
         if (state.lang !== "ar") {
@@ -2300,14 +3169,40 @@
         }
       });
 
+      // Prominent Full-screen Offline Retry Button
+      if (el.fsRetryBtn) {
+        el.fsRetryBtn.addEventListener("click", async () => {
+          el.fsRetrySpinner.classList.remove("hidden");
+          el.fsRetryBtnLabel.textContent = loc("Checking...", "Vérification...", "جارٍ الفحص...");
+          el.fsOfflineStatus.classList.add("hidden");
+
+          const online = await isNetworkReachable();
+          if (online) {
+            hideOfflineBlockingOverlay();
+            fetchWeather(true);
+          } else {
+            el.fsOfflineStatus.textContent = loc(
+              "Still offline. Please check your connection and try again.",
+              "Toujours hors ligne. Veuillez vérifier votre réseau.",
+              "لا يزال غير متصل بالإنترنت. يرجى التحقق من الشبكة والمحاولة مجدداً."
+            );
+            el.fsOfflineStatus.classList.remove("hidden");
+            el.fullscreenOfflineOverlay.firstElementChild.classList.add("animate-pulse");
+            setTimeout(() => el.fullscreenOfflineOverlay.firstElementChild.classList.remove("animate-pulse"), 600);
+          }
+          el.fsRetrySpinner.classList.add("hidden");
+          el.fsRetryBtnLabel.textContent = t("retry");
+        });
+      }
+
       // On-demand refresh button
       el.refreshBtn.addEventListener("click", () => {
-        fetchWeather();
+        fetchWeather(true);
       });
 
-      // Retry button on network error
+      // Retry button on inline network card
       el.retryBtn.addEventListener("click", () => {
-        fetchWeather();
+        fetchWeather(true);
       });
 
       // Interactive Card Clicks -> Open Full Interface Overlays
@@ -2330,8 +3225,141 @@
         }
       });
 
+      // -----------------------------------------------------------
+      // FIRST-TIME FULL-SCREEN ONBOARDING (Requirement 1)
+      // Exact specified text: "Search your city, town, or country to start fetching data! Search and select where you live!"
+      // Re-uses exact same search code/logic already implemented with autocomplete disabled
+      // -----------------------------------------------------------
+      function checkFirstTimeOnboarding() {
+        const hasOnboarded = localStorage.getItem("wx_onboarded");
+        if (!hasOnboarded) {
+          el.onboardingView.classList.remove("hidden");
+          document.body.style.overflow = "hidden";
+        }
+      }
+
+      let onboardingSearchDebounce = null;
+      if (el.onboardingSearchInput) {
+        el.onboardingSearchInput.addEventListener("input", (e) => {
+          const query = e.target.value.trim();
+          if (query.length > 0) {
+            el.onboardingClearSearchBtn.classList.remove("hidden");
+          } else {
+            el.onboardingClearSearchBtn.classList.add("hidden");
+            el.onboardingSearchResultsList.classList.add("hidden");
+            return;
+          }
+
+          clearTimeout(onboardingSearchDebounce);
+          if (query.length < 2) return;
+
+          onboardingSearchDebounce = setTimeout(() => {
+            performOnboardingSearch(query);
+          }, 240);
+        });
+
+        el.onboardingClearSearchBtn.addEventListener("click", () => {
+          el.onboardingSearchInput.value = "";
+          el.onboardingClearSearchBtn.classList.add("hidden");
+          el.onboardingSearchResultsList.classList.add("hidden");
+        });
+      }
+
+      async function performOnboardingSearch(query) {
+        try {
+          // Exactly same geocoding API logic
+          const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=10&language=en`);
+          if (!res.ok) return;
+          const data = await res.json();
+          renderOnboardingSearchResults(data.results || []);
+        } catch (e) {
+          // Network errors handled gracefully
+        }
+      }
+
+      function renderOnboardingSearchResults(results) {
+        if (!el.onboardingSearchResultsList) return;
+        if (!results || results.length === 0) {
+          el.onboardingSearchResultsList.innerHTML = `<div class="p-4 text-xs text-slate-400 text-center">${t("noLocationsFound")}</div>`;
+          el.onboardingSearchResultsList.classList.remove("hidden");
+          return;
+        }
+
+        let html = "";
+        results.forEach(item => {
+          const region = item.admin1 ? `${item.admin1}, ` : "";
+          const country = item.country || "";
+          const countryCode = item.country_code || "LOC";
+
+          html += `
+            <div class="onboarding-search-item px-3.5 py-3 rounded-xl hover:bg-cyan-500/15 active:bg-cyan-500/25 cursor-pointer flex items-center justify-between text-left rtl:text-right transition-colors border border-white/5 hover:border-cyan-500/30"
+                 data-city="${item.name}"
+                 data-country="${country}"
+                 data-countrycode="${countryCode}"
+                 data-region="${region}${country}"
+                 data-lat="${item.latitude}"
+                 data-lon="${item.longitude}">
+              <div class="overflow-hidden pr-2 rtl:pr-0 rtl:pl-2">
+                <div class="text-sm font-bold text-white truncate">${item.name}</div>
+                <div class="text-[11px] text-slate-400 truncate">${region}${country}</div>
+              </div>
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-white/5 text-cyan-300 border border-white/10 shrink-0">${countryCode}</span>
+            </div>
+          `;
+        });
+
+        el.onboardingSearchResultsList.innerHTML = html;
+        el.onboardingSearchResultsList.classList.remove("hidden");
+
+        // Click on result -> selects city, completes onboarding, starts fetching data
+        document.querySelectorAll(".onboarding-search-item").forEach(item => {
+          item.addEventListener("click", () => {
+            const selectedCity = {
+              name: item.getAttribute("data-city"),
+              country: item.getAttribute("data-country"),
+              countryCode: item.getAttribute("data-countrycode"),
+              region: item.getAttribute("data-region"),
+              lat: parseFloat(item.getAttribute("data-lat")),
+              lon: parseFloat(item.getAttribute("data-lon"))
+            };
+
+            state.city = selectedCity;
+            localStorage.setItem("wx_selected_city", JSON.stringify(selectedCity));
+            localStorage.setItem("wx_onboarded", "true");
+
+            el.onboardingView.classList.add("hidden");
+            document.body.style.overflow = "";
+
+            fetchWeather(true);
+          });
+        });
+      }
+
+      // Settings: Theme Toggle Listeners (Requirement 2)
+      if (el.settingThemeDark) {
+        el.settingThemeDark.addEventListener("click", () => {
+          if (state.theme !== "dark") {
+            state.theme = "dark";
+            localStorage.setItem("wx_theme", "dark");
+            applyTheme();
+          }
+        });
+      }
+
+      if (el.settingThemeLight) {
+        el.settingThemeLight.addEventListener("click", () => {
+          if (state.theme !== "light") {
+            state.theme = "light";
+            localStorage.setItem("wx_theme", "light");
+            applyTheme();
+          }
+        });
+      }
+
       // Initialize Application
+      applyTheme();
       updateUITexts();
+      checkFirstTimeOnboarding();
       fetchWeather();
 
     })();

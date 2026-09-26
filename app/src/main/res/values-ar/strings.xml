@@ -1,0 +1,30 @@
+<resources>
+    <string name="app_name">weatherX</string>
+    <string name="no_internet_found">لم يتم العثور على اتصال بالإنترنت، يرجى المحاولة مرة أخرى</string>
+    <string name="retry">إعادة المحاولة</string>
+    <string name="settings">الإعدادات</string>
+    <string name="temperature_unit">وحدة درجة الحرارة</string>
+    <string name="language">اللغة</string>
+    <string name="english">English</string>
+    <string name="french">Français</string>
+    <string name="arabic">العربية</string>
+    <string name="search_placeholder">ابحث عن أي مدينة أو ولاية أو منطقة...</string>
+    <string name="offline_title">وضع عدم الاتصال</string>
+    <string name="checking_connection">جارٍ التحقق من الاتصال...</string>
+    <string name="still_offline">لا يزال غير متصل، يرجى التحقق من اتصال الشبكة.</string>
+    <string name="clear_sky">سماء صافية</string>
+    <string name="partly_cloudy">غائم جزئياً</string>
+    <string name="overcast">غائم كلياً</string>
+    <string name="rain">هطول أمطار</string>
+    <string name="thunderstorm">عاصفة رعدية</string>
+    <string name="snowfall">تساقط الثلوج</string>
+    <string name="humidity">الرطوبة</string>
+    <string name="wind">الرياح</string>
+    <string name="uv_index">مؤشر الأشعة فوق البنفسجية</string>
+    <string name="moon_phase">طور القمر</string>
+    <string name="outdoor_safety">السلامة الخارجية</string>
+    <string name="forecast_7_day">توقعات 7 أيام</string>
+    <string name="details">تفاصيل</string>
+    <string name="back">رجوع</string>
+    <string name="app_version">الإصدار 2.0</string>
+</resources>

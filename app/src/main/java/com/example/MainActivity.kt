@@ -1,10 +1,15 @@
 package com.example
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.graphics.Color
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.Bundle
+import android.view.View
 import android.view.ViewGroup
 import android.webkit.ConsoleMessage
+import android.webkit.JavascriptInterface
 import android.webkit.RenderProcessGoneDetail
 import android.webkit.WebChromeClient
 import android.webkit.WebSettings
@@ -51,6 +56,40 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
+    fun isNetworkConnected(): Boolean {
+        val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager ?: return false
+        val activeNetwork = cm.activeNetwork ?: return false
+        val caps = cm.getNetworkCapabilities(activeNetwork) ?: return false
+        return caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+    }
+
+    fun setDynamicLayoutDirection(isRtl: Boolean) {
+        runOnUiThread {
+            window.decorView.layoutDirection = if (isRtl) {
+                View.LAYOUT_DIRECTION_RTL
+            } else {
+                View.LAYOUT_DIRECTION_LTR
+            }
+        }
+    }
+}
+
+class WebAppInterface(private val activity: MainActivity) {
+    @JavascriptInterface
+    fun isNetworkAvailable(): Boolean {
+        return activity.isNetworkConnected()
+    }
+
+    @JavascriptInterface
+    fun setLayoutDirectionRtl(isRtl: Boolean) {
+        activity.setDynamicLayoutDirection(isRtl)
+    }
+
+    @JavascriptInterface
+    fun onLanguageChanged(lang: String) {
+        activity.setDynamicLayoutDirection(lang == "ar")
+    }
 }
 
 @SuppressLint("SetJavaScriptEnabled")
@@ -62,6 +101,20 @@ fun WeatherScreen(modifier: Modifier = Modifier) {
         webViewInstance?.evaluateJavascript(
             """
             (function() {
+                var blockingOverlay = document.getElementById('fullscreenOfflineOverlay');
+                if (blockingOverlay && !blockingOverlay.classList.contains('hidden')) {
+                    return true;
+                }
+                var fsWind = document.getElementById('fullscreen-wind-map-view');
+                if (fsWind && !fsWind.classList.contains('hidden')) {
+                    var closeWind = document.getElementById('close-fs-wind-map-btn');
+                    if (closeWind) closeWind.click();
+                    return true;
+                }
+                var onboarding = document.getElementById('onboarding-fullscreen-view');
+                if (onboarding && !onboarding.classList.contains('hidden')) {
+                    return true;
+                }
                 var overlay = document.getElementById('detailOverlay');
                 var settings = document.getElementById('settingsModal');
                 if (overlay && !overlay.classList.contains('hidden')) {
@@ -115,6 +168,10 @@ fun WeatherScreen(modifier: Modifier = Modifier) {
                     allowFileAccess = true
                     allowContentAccess = true
                     mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
+                }
+
+                if (context is MainActivity) {
+                    addJavascriptInterface(WebAppInterface(context), "AndroidInterface")
                 }
 
                 clearCache(true)

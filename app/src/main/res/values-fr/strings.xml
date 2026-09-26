@@ -1,0 +1,30 @@
+<resources>
+    <string name="app_name">weatherX</string>
+    <string name="no_internet_found">Aucune connexion Internet trouvée, veuillez réessayer</string>
+    <string name="retry">Réessayer</string>
+    <string name="settings">Paramètres</string>
+    <string name="temperature_unit">Unité de température</string>
+    <string name="language">Langue</string>
+    <string name="english">English</string>
+    <string name="french">Français</string>
+    <string name="arabic">العربية</string>
+    <string name="search_placeholder">Rechercher une ville, région ou commune...</string>
+    <string name="offline_title">Mode hors-ligne</string>
+    <string name="checking_connection">Vérification de la connexion...</string>
+    <string name="still_offline">Toujours hors ligne, vérifiez votre connexion réseau.</string>
+    <string name="clear_sky">Ciel dégagé</string>
+    <string name="partly_cloudy">Partiellement nuageux</string>
+    <string name="overcast">Couvert</string>
+    <string name="rain">Averses de pluie</string>
+    <string name="thunderstorm">Orage</string>
+    <string name="snowfall">Chutes de neige</string>
+    <string name="humidity">Humidité</string>
+    <string name="wind">Vent</string>
+    <string name="uv_index">Indice UV</string>
+    <string name="moon_phase">Phase de lune</string>
+    <string name="outdoor_safety">Sécurité extérieure</string>
+    <string name="forecast_7_day">Prévisions sur 7 jours</string>
+    <string name="details">Détails</string>
+    <string name="back">Retour</string>
+    <string name="app_version">Version 2.0</string>
+</resources>
