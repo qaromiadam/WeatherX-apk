@@ -1,0 +1,2340 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>weatherX</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            wx: {
+              accent: '#00f0ff',
+              accentHover: '#38bdf8',
+              surface: 'rgba(15, 23, 42, 0.75)',
+              card: 'rgba(21, 31, 54, 0.65)',
+              border: 'rgba(255, 255, 255, 0.08)'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #07090e;
+      color: #f8fafc;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Cairo", "Noto Sans Arabic", Helvetica, Arial, sans-serif;
+      min-height: 100vh;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+      -webkit-tap-highlight-color: transparent;
+      overflow-x: hidden;
+      user-select: none;
+    }
+
+    [dir="rtl"] {
+      text-align: right;
+    }
+
+    .glass-panel {
+      background: rgba(13, 19, 34, 0.82);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .glass-card {
+      background: rgba(19, 28, 48, 0.65);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+    }
+
+    .glass-card:active {
+      transform: scale(0.98);
+      border-color: rgba(0, 240, 255, 0.35);
+    }
+
+    /* Dynamic Condition Wallpapers */
+    #wallpaper-container {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      transition: background 0.7s ease-in-out, opacity 0.7s ease-in-out;
+    }
+
+    .wall-clear-day {
+      background:
+        radial-gradient(circle at 80% 12%, rgba(251, 191, 36, 0.25) 0%, transparent 55%),
+        radial-gradient(circle at 20% 85%, rgba(14, 165, 233, 0.18) 0%, transparent 60%),
+        linear-gradient(180deg, #0a1122 0%, #06080e 100%);
+    }
+
+    .wall-clear-night {
+      background:
+        radial-gradient(circle at 75% 15%, rgba(99, 102, 241, 0.22) 0%, transparent 55%),
+        radial-gradient(circle at 25% 75%, rgba(0, 240, 255, 0.10) 0%, transparent 60%),
+        linear-gradient(180deg, #050711 0%, #030408 100%);
+    }
+
+    .wall-cloudy {
+      background:
+        radial-gradient(circle at 50% 20%, rgba(148, 163, 184, 0.22) 0%, transparent 60%),
+        radial-gradient(circle at 80% 80%, rgba(71, 85, 105, 0.24) 0%, transparent 60%),
+        linear-gradient(180deg, #0b111e 0%, #07090e 100%);
+    }
+
+    .wall-rainy {
+      background:
+        radial-gradient(circle at 30% 15%, rgba(56, 189, 248, 0.24) 0%, transparent 55%),
+        radial-gradient(circle at 70% 85%, rgba(30, 58, 138, 0.32) 0%, transparent 65%),
+        linear-gradient(180deg, #070d1c 0%, #050711 100%);
+    }
+
+    .wall-stormy {
+      background:
+        radial-gradient(circle at 50% 15%, rgba(168, 85, 247, 0.30) 0%, transparent 55%),
+        radial-gradient(circle at 85% 80%, rgba(239, 68, 68, 0.20) 0%, transparent 60%),
+        linear-gradient(180deg, #0f0722 0%, #06030e 100%);
+    }
+
+    .wall-snowy {
+      background:
+        radial-gradient(circle at 50% 20%, rgba(224, 242, 254, 0.26) 0%, transparent 60%),
+        radial-gradient(circle at 80% 80%, rgba(186, 230, 253, 0.15) 0%, transparent 60%),
+        linear-gradient(180deg, #091325 0%, #050810 100%);
+    }
+
+    /* Custom scrollbars */
+    ::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.12);
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body class="selection:bg-cyan-500 selection:text-black">
+
+  <!-- Dynamic Condition Wallpaper -->
+  <div id="wallpaper-container" class="wall-clear-day"></div>
+
+  <!-- Main View Container (renderNode mounted root container) -->
+  <div id="renderNode" class="relative z-10 max-w-md mx-auto min-h-screen px-4 py-3.5 flex flex-col justify-between">
+    
+    <div>
+      <!-- App Header: Branding & Minimal Icon (No map pins or emojis) -->
+      <header class="flex items-center justify-between pb-3.5 pt-1">
+        <div class="flex items-center gap-2.5">
+          <!-- Minimal Dark Circle Icon with WX typography -->
+          <div class="w-10 h-10 rounded-full bg-[#0d1322] border border-white/10 flex items-center justify-center shadow-lg shadow-black/50">
+            <span class="text-sm font-black tracking-tight text-white font-mono">
+              W<span class="text-cyan-400">X</span>
+            </span>
+          </div>
+          <!-- Clean App Title -->
+          <h1 class="text-xl font-bold tracking-tight text-white">weather<span class="text-cyan-400">X</span></h1>
+        </div>
+
+        <!-- Header Actions: Refresh & Settings -->
+        <div class="flex items-center gap-2">
+          <button id="refresh-btn" class="w-9 h-9 rounded-xl glass-card flex items-center justify-center text-slate-300 hover:text-white border border-white/10 active:scale-95 transition-all" title="Refresh">
+            <svg id="refresh-icon" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+          </button>
+          <button id="open-settings-btn" class="w-9 h-9 rounded-xl glass-card flex items-center justify-center text-slate-300 hover:text-white border border-white/10 active:scale-95 transition-all" title="Settings">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      <!-- Global Search Bar: Open-Meteo Geocoding API (Zero pin-point/map-pin emojis) -->
+      <div class="relative mb-3.5">
+        <div class="relative flex items-center">
+          <span class="absolute left-3.5 text-slate-400 pointer-events-none rtl:left-auto rtl:right-3.5">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </span>
+          <input 
+            id="global-search-input"
+            type="text" 
+            placeholder="Search any town, region, or world city..." 
+            autocomplete="off"
+            class="w-full h-11 pl-10 pr-9 rtl:pl-9 rtl:pr-10 rounded-xl glass-card bg-slate-900/60 text-sm text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-400/40 transition-all font-medium border border-white/10"
+          />
+          <button id="clear-search-btn" class="hidden absolute right-3 rtl:right-auto rtl:left-3 text-slate-400 hover:text-white">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <!-- Search Results Dropdown -->
+        <div id="search-results-dropdown" class="hidden absolute left-0 right-0 top-12 z-50 rounded-xl glass-panel max-h-64 overflow-y-auto shadow-2xl p-1.5 border border-white/15">
+          <div id="search-results-list" class="space-y-1"></div>
+        </div>
+      </div>
+
+      <!-- Dynamic Weather Alert Banner (Requirement 4) -->
+      <div id="weather-alert-card" class="hidden mb-3 glass-panel rounded-2xl p-3.5 border transition-all">
+        <div class="flex items-start gap-3">
+          <div id="alert-icon-container" class="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 mt-0.5">
+            <!-- Dynamic Alert Icon -->
+          </div>
+          <div class="flex-1">
+            <div class="flex items-center gap-2">
+              <span id="alert-badge" class="text-[10px] font-mono font-bold uppercase px-1.5 py-0.5 rounded"></span>
+              <span id="alert-title" class="text-xs font-bold text-white"></span>
+            </div>
+            <p id="alert-description" class="text-[11px] text-slate-300 mt-1 leading-snug"></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Offline / Network Error Container (Requirement 7) -->
+      <div id="offline-error-container" class="hidden my-8 glass-panel rounded-2xl p-6 text-center border border-rose-500/30">
+        <div class="w-12 h-12 mx-auto rounded-full bg-rose-500/15 border border-rose-500/30 flex items-center justify-center text-rose-400 mb-3">
+          <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636a9 9 0 010 12.728m0 0l-2.829-2.829m2.829 2.829L21 21M15.536 8.464a5 5 0 010 7.072m0 0l-2.829-2.829m-4.243 4.243a9 9 0 01-2.828-6.364m0 0l2.828 2.828M3 3l18 18" />
+          </svg>
+        </div>
+        <p id="offline-error-message" class="text-sm font-semibold text-white leading-relaxed mb-4">
+          No internet found, please connect to internet and try again
+        </p>
+        <button id="retry-btn" class="px-5 py-2 rounded-xl text-xs font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 hover:bg-cyan-500/30 active:scale-95 transition-all">
+          <span id="retry-btn-label">Retry Connection</span>
+        </button>
+      </div>
+
+      <!-- Main Dashboard Content -->
+      <main id="main-weather-content" class="space-y-2.5">
+        
+        <!-- Hero Card: Temperature & Condition (Click opens Temperature Overlay) -->
+        <div id="card-temperature" class="glass-panel rounded-2xl p-4 relative overflow-hidden shadow-xl border border-white/10 cursor-pointer group hover:border-cyan-500/30 transition-all">
+          <div class="flex justify-between items-start">
+            <div>
+              <div class="flex items-center gap-2">
+                <!-- Location Name strictly in original spelling -->
+                <h2 id="city-name" class="text-2xl font-bold tracking-tight text-white">Algiers</h2>
+                <span id="country-pill" class="text-[10px] font-mono font-semibold uppercase px-2 py-0.5 rounded-md bg-cyan-500/15 text-cyan-300 border border-cyan-500/30">DZ</span>
+              </div>
+              <p id="city-region" class="text-xs text-slate-400 mt-0.5">Algiers Wilaya, Algeria</p>
+            </div>
+            
+            <div class="flex items-center gap-1 text-[11px] text-cyan-300/80 font-medium px-2 py-1 rounded-lg bg-white/5 border border-white/10 group-hover:text-cyan-300 transition-colors">
+              <span data-i18n="details">Details</span>
+              <svg class="w-3.5 h-3.5 rtl:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              </svg>
+            </div>
+          </div>
+
+          <!-- Temperature and Visual Icon -->
+          <div class="flex items-center justify-between my-2.5">
+            <div class="flex items-baseline">
+              <span id="current-temp" class="text-6xl font-black tracking-tighter text-white">--</span>
+              <span id="temp-unit-symbol" class="text-3xl font-light text-cyan-400 ml-1">°C</span>
+            </div>
+
+            <div class="flex flex-col items-center">
+              <div id="hero-weather-icon" class="w-16 h-16 flex items-center justify-center">
+                <!-- Condition SVG -->
+              </div>
+              <span id="weather-description" class="text-xs font-semibold text-slate-300 mt-1 capitalize text-center">Loading...</span>
+            </div>
+          </div>
+
+          <!-- Feels Like & High / Low range -->
+          <div class="flex items-center justify-between text-xs text-slate-300 pt-2.5 border-t border-white/5">
+            <div class="flex items-center gap-1.5">
+              <span class="text-slate-400" data-i18n="feelsLike">Feels like</span>
+              <span id="apparent-temp" class="font-semibold text-white">--°</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="flex items-center text-emerald-400 font-medium">
+                <span class="text-[10px] mr-1 rtl:mr-0 rtl:ml-1 text-slate-400 font-normal" data-i18n="highLabel">H:</span>
+                <span id="temp-max">--°</span>
+              </span>
+              <span class="flex items-center text-blue-400 font-medium">
+                <span class="text-[10px] mr-1 rtl:mr-0 rtl:ml-1 text-slate-400 font-normal" data-i18n="lowLabel">L:</span>
+                <span id="temp-min">--°</span>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Core Weather Blocks Grid: Interactive Metric Cards -->
+        <div class="grid grid-cols-2 gap-2.5">
+          
+          <!-- 1. Wind Speed & Direction Card -->
+          <div id="card-wind" class="glass-card rounded-2xl p-3.5 flex flex-col justify-between cursor-pointer hover:border-cyan-400/40">
+            <div class="flex items-center justify-between">
+              <span class="text-[11px] font-semibold uppercase tracking-wider text-slate-400" data-i18n="wind">Wind</span>
+              <svg class="w-4 h-4 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
+            </div>
+
+            <div class="my-2 flex items-center justify-center gap-3">
+              <div class="relative w-11 h-11 rounded-full border border-white/15 flex items-center justify-center bg-black/40 shrink-0">
+                <span class="absolute top-0.5 text-[7px] font-mono text-slate-500">N</span>
+                <div id="wind-compass-needle" class="w-full h-full flex items-center justify-center transition-transform duration-500 ease-out" style="transform: rotate(0deg);">
+                  <svg class="w-5 h-5 text-cyan-400" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2L15 11H9L12 2Z" fill="#38bdf8"/>
+                    <path d="M12 22L9 13H15L12 22Z" fill="#64748b" opacity="0.6"/>
+                  </svg>
+                </div>
+              </div>
+
+              <div>
+                <div class="text-base font-bold text-white leading-tight">
+                  <span id="wind-speed">--</span>
+                  <span class="text-xs font-normal text-slate-400" id="wind-unit-label">km/h</span>
+                </div>
+                <div class="text-[10px] text-slate-400 font-mono" id="wind-cardinal">--</div>
+              </div>
+            </div>
+
+            <div class="text-[10px] text-slate-400 flex items-center justify-between">
+              <span id="wind-gust-label">Gusts: --</span>
+              <span class="text-[9px] text-cyan-400/80" data-i18n="tapDetails">Tap ›</span>
+            </div>
+          </div>
+
+          <!-- 2. UV Index Card -->
+          <div id="card-uv" class="glass-card rounded-2xl p-3.5 flex flex-col justify-between cursor-pointer hover:border-cyan-400/40">
+            <div class="flex items-center justify-between">
+              <span class="text-[11px] font-semibold uppercase tracking-wider text-slate-400" data-i18n="uvIndex">UV Index</span>
+              <svg class="w-4 h-4 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+              </svg>
+            </div>
+
+            <div class="my-2">
+              <div class="flex items-baseline gap-1.5">
+                <span id="uv-index-val" class="text-2xl font-black text-white">--</span>
+                <span id="uv-level-label" class="text-xs font-semibold text-amber-400">Moderate</span>
+              </div>
+              <div class="w-full bg-slate-800 h-1.5 rounded-full mt-2 overflow-hidden">
+                <div id="uv-progress" class="bg-gradient-to-r from-emerald-400 via-amber-400 to-rose-500 h-full rounded-full transition-all duration-500" style="width: 30%;"></div>
+              </div>
+            </div>
+
+            <div class="text-[10px] text-slate-400 flex items-center justify-between">
+              <span id="uv-advice-hint" data-i18n="sunProtection">Sun protection</span>
+              <span class="text-[9px] text-cyan-400/80" data-i18n="tapDetails">Tap ›</span>
+            </div>
+          </div>
+
+          <!-- 3. Humidity Card -->
+          <div id="card-humidity" class="glass-card rounded-2xl p-3.5 flex flex-col justify-between cursor-pointer hover:border-cyan-400/40">
+            <div class="flex items-center justify-between">
+              <span class="text-[11px] font-semibold uppercase tracking-wider text-slate-400" data-i18n="humidity">Humidity</span>
+              <svg class="w-4 h-4 text-sky-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+              </svg>
+            </div>
+
+            <div class="my-2">
+              <div class="text-2xl font-black text-white">
+                <span id="humidity-value">--</span><span class="text-base font-light text-slate-400">%</span>
+              </div>
+              <div class="w-full bg-slate-800 h-1.5 rounded-full mt-2 overflow-hidden">
+                <div id="humidity-progress" class="bg-gradient-to-r from-sky-500 to-cyan-300 h-full rounded-full transition-all duration-500" style="width: 50%;"></div>
+              </div>
+            </div>
+
+            <div class="text-[10px] text-slate-400 flex items-center justify-between">
+              <span id="dew-point-label">Dew point: --°</span>
+              <span class="text-[9px] text-cyan-400/80" data-i18n="tapDetails">Tap ›</span>
+            </div>
+          </div>
+
+          <!-- 4. Moon Phase Card -->
+          <div id="card-moon" class="glass-card rounded-2xl p-3.5 flex flex-col justify-between cursor-pointer hover:border-cyan-400/40">
+            <div class="flex items-center justify-between">
+              <span class="text-[11px] font-semibold uppercase tracking-wider text-slate-400" data-i18n="moonPhase">Moon Phase</span>
+              <svg class="w-4 h-4 text-amber-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+              </svg>
+            </div>
+
+            <div class="my-1.5 flex items-center gap-2">
+              <div id="moon-phase-icon" class="w-9 h-9 flex items-center justify-center shrink-0">
+                <!-- Moon SVG -->
+              </div>
+              <div class="overflow-hidden">
+                <div id="moon-phase-name" class="text-xs font-bold text-white capitalize leading-tight truncate">Crescent</div>
+                <div id="moon-illumination" class="text-[10px] text-slate-400 font-mono mt-0.5">--% Illum.</div>
+              </div>
+            </div>
+
+            <div class="text-[10px] text-slate-400 flex items-center justify-between">
+              <span id="lunar-cycle-hint">Lunar day --</span>
+              <span class="text-[9px] text-cyan-400/80" data-i18n="tapDetails">Tap ›</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. Outdoor Safety Badge Card (Click opens Safety Overlay) -->
+        <div id="card-safety" class="glass-card rounded-2xl p-3.5 flex items-center justify-between cursor-pointer hover:border-cyan-400/40">
+          <div class="flex items-start gap-3">
+            <div class="w-9 h-9 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center shrink-0 text-emerald-400 mt-0.5">
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+              </svg>
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="text-[11px] font-semibold uppercase tracking-wider text-slate-400" data-i18n="outdoorSafety">Outdoor Safety</span>
+                <span id="safety-score-pill" class="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-white/5 text-emerald-400 border border-white/10">92/100</span>
+              </div>
+              <div id="safety-title" class="text-xs font-bold text-emerald-400 mt-0.5">Safe for Outdoors</div>
+              <div id="safety-desc" class="text-[10px] text-slate-300 mt-0.5 line-clamp-1">Favorable weather for recreation.</div>
+            </div>
+          </div>
+          
+          <div class="text-slate-400 pl-2 rtl:pl-0 rtl:pr-2">
+            <svg class="w-4 h-4 rtl:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </div>
+        </div>
+
+        <!-- 7-Day Extended Forecast Strip -->
+        <div class="glass-panel rounded-2xl p-3.5 border border-white/10">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-[11px] font-semibold uppercase tracking-wider text-slate-400" data-i18n="forecast7Day">7-Day Forecast</span>
+            <span class="text-[10px] text-slate-400 font-mono" data-i18n="highLow">High / Low</span>
+          </div>
+          <div id="forecast-daily-container" class="space-y-1.5">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Clean Minimal Footer -->
+    <footer class="pt-4 pb-2 text-center text-[10px] text-slate-500 font-mono">
+      weatherX · Open-Meteo
+    </footer>
+  </div>
+
+  <!-- FULL INTERFACE OVERLAYS CONTAINER (Requirement 4: ONLY ONE SINGLE BACK BUTTON AT THE TOP) -->
+  <div id="detail-overlay" class="hidden fixed inset-0 z-50 overflow-y-auto bg-[#070a13]/95 backdrop-blur-2xl p-4 transition-all">
+    <div class="max-w-md mx-auto min-h-screen py-2">
+      
+      <!-- Overlay Header with ONLY ONE SINGLE BACK BUTTON (No secondary X or bottom dismiss) -->
+      <div class="flex items-center justify-between border-b border-white/10 pb-3 mb-4">
+        <button id="overlay-single-back-btn" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl glass-card text-xs font-semibold text-slate-300 hover:text-white border border-white/10 active:scale-95 transition-all">
+          <svg class="w-4 h-4 rtl:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+          </svg>
+          <span data-i18n="back">Back</span>
+        </button>
+
+        <h3 id="overlay-title" class="text-sm font-bold uppercase tracking-wider text-white">Weather Detail</h3>
+
+        <!-- Invisible spacer for perfect centering balance -->
+        <div class="w-14"></div>
+      </div>
+
+      <!-- Dynamic Overlay Content Body -->
+      <div id="overlay-content" class="space-y-3.5">
+        <!-- Populated dynamically based on clicked card -->
+      </div>
+    </div>
+  </div>
+
+  <!-- SETTINGS MODAL (Requirement 6: Unit Toggle, Language Toggle En/Ar, App Info) -->
+  <div id="settings-modal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-black/80 backdrop-blur-md p-4 flex items-center justify-center">
+    <div class="glass-panel w-full max-w-sm rounded-2xl p-5 border border-white/15 space-y-4 shadow-2xl relative my-auto">
+      
+      <!-- Settings Header with Single Back Button -->
+      <div class="flex items-center justify-between border-b border-white/10 pb-3">
+        <button id="close-settings-back-btn" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl glass-card text-xs font-semibold text-slate-300 hover:text-white border border-white/10 active:scale-95">
+          <svg class="w-4 h-4 rtl:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+          </svg>
+          <span data-i18n="back">Back</span>
+        </button>
+        <h3 class="font-bold text-white text-sm uppercase tracking-wider" data-i18n="settings">Settings</h3>
+        <div class="w-14"></div>
+      </div>
+
+      <!-- 1. Temperature Unit Toggle (°C / °F) -->
+      <div>
+        <label class="text-xs font-semibold text-slate-300 block mb-2" data-i18n="tempUnit">Temperature Unit</label>
+        <div class="grid grid-cols-2 gap-2">
+          <button id="setting-unit-c" class="py-2.5 rounded-xl text-xs font-bold border transition-all">
+            Celsius (°C)
+          </button>
+          <button id="setting-unit-f" class="py-2.5 rounded-xl text-xs font-bold border transition-all">
+            Fahrenheit (°F)
+          </button>
+        </div>
+      </div>
+
+      <!-- 2. Language Toggle (English / Arabic) -->
+      <div>
+        <label class="text-xs font-semibold text-slate-300 block mb-2" data-i18n="language">Language</label>
+        <div class="grid grid-cols-2 gap-2">
+          <button id="setting-lang-en" class="py-2.5 rounded-xl text-xs font-bold border transition-all">
+            English
+          </button>
+          <button id="setting-lang-ar" class="py-2.5 rounded-xl text-xs font-bold border transition-all font-sans">
+            العربية
+          </button>
+        </div>
+      </div>
+
+      <!-- 3. App Info (About Section) -->
+      <div class="pt-3 border-t border-white/10 space-y-2 text-xs">
+        <h4 class="font-bold text-white uppercase tracking-wider text-[11px]" data-i18n="aboutApp">About weatherX</h4>
+        <div class="glass-card rounded-xl p-3 border border-white/5 space-y-1.5 text-[11px] text-slate-300">
+          <div class="flex justify-between">
+            <span class="text-slate-400" data-i18n="appVersion">Version</span>
+            <span class="font-mono font-bold text-white">2.4.0</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-400" data-i18n="architecture">Architecture</span>
+            <span class="font-mono text-cyan-300">Zero-RAM / On-Demand</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-400" data-i18n="dataSource">Data Source</span>
+            <span class="font-mono text-white">Open-Meteo API</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-400" data-i18n="geocoding">Geocoding</span>
+            <span class="font-mono text-white">Global Search</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Vanilla JavaScript Application Engine -->
+  <script>
+    (function () {
+      "use strict";
+
+      // Translations Dictionary (English & Arabic)
+      // Note: Proper city names and location results are kept in their original spelling as required!
+      const i18n = {
+        en: {
+          searchPlaceholder: "Search any town, region, or world city...",
+          noLocationsFound: "No locations found.",
+          noInternet: "No internet found, please connect to internet and try again",
+          retry: "Retry Connection",
+          details: "Details",
+          feelsLike: "Feels like",
+          highLabel: "H:",
+          lowLabel: "L:",
+          wind: "Wind",
+          uvIndex: "UV Index",
+          humidity: "Humidity",
+          moonPhase: "Moon Phase",
+          outdoorSafety: "Outdoor Safety",
+          forecast7Day: "7-Day Forecast",
+          highLow: "High / Low",
+          back: "Back",
+          settings: "Settings",
+          tempUnit: "Temperature Unit",
+          language: "Language",
+          aboutApp: "About weatherX",
+          appVersion: "Version",
+          architecture: "Architecture",
+          dataSource: "Data Source",
+          geocoding: "Geocoding",
+          sunProtection: "Sun protection",
+          tapDetails: "Tap ›",
+          safeTitle: "Safe for Outdoors",
+          safeDesc: "Favorable weather for recreation, jogging, and commutes.",
+          stormTitle: "Thunderstorm Alert",
+          stormDesc: "Lightning hazard. Seek shelter indoors immediately.",
+          windTitle: "High Wind Hazard",
+          windDesc: "Severe gusts detected. Secure loose objects and stay cautious.",
+          heatTitle: "Extreme Heat Warning",
+          heatDesc: "High heatstroke risk. Stay hydrated and avoid direct sun.",
+          freezeTitle: "Freezing Caution",
+          freezeDesc: "Near-freezing temperatures. Bundle up with thermal layers.",
+          rainTitle: "Rain Showers",
+          rainDesc: "Wet surfaces and lower visibility. Bring an umbrella.",
+          breezyTitle: "Breezy Conditions",
+          breezyDesc: "Noticeable wind gusts. Suitable for light activities.",
+          clearSky: "Clear Sky",
+          clearNight: "Clear Night",
+          partlyCloudy: "Partly Cloudy",
+          scatteredClouds: "Scattered Clouds",
+          overcast: "Overcast",
+          fogHaze: "Fog & Haze",
+          drizzle: "Light Drizzle",
+          rainShowers: "Rain Showers",
+          snowfall: "Snowfall",
+          heavyRain: "Heavy Rain",
+          thunderstorm: "Thunderstorm",
+          fairWeather: "Fair Weather",
+          today: "Today",
+          now: "Now"
+        },
+        ar: {
+          searchPlaceholder: "ابحث عن أي مدينة أو ولاية أو منطقة...",
+          noLocationsFound: "لم يتم العثور على مواقع.",
+          noInternet: "لم يتم العثور على اتصال بالإنترنت، يرجى الاتصال بالإنترنت والمحاولة مرة أخرى",
+          retry: "إعادة المحاولة",
+          details: "تفاصيل",
+          feelsLike: "الإحساس الحقيقي",
+          highLabel: "ع:",
+          lowLabel: "د:",
+          wind: "الرياح",
+          uvIndex: "مؤشر الأشعة",
+          humidity: "الرطوبة",
+          moonPhase: "طور القمر",
+          outdoorSafety: "السلامة الخارجية",
+          forecast7Day: "توقعات 7 أيام",
+          highLow: "عظمى / صغرى",
+          back: "رجوع",
+          settings: "الإعدادات",
+          tempUnit: "وحدة الحرارة",
+          language: "اللغة",
+          aboutApp: "حول weatherX",
+          appVersion: "الإصدار",
+          architecture: "البنية البرمجية",
+          dataSource: "مصدر البيانات",
+          geocoding: "البحث الجغرافي",
+          sunProtection: "حماية من الشمس",
+          tapDetails: "عرض ›",
+          safeTitle: "مناسب للأنشطة الخارجية",
+          safeDesc: "طقس مثالي للمشي والرياضة والتنقل.",
+          stormTitle: "تحذير من عواصف رعدية",
+          stormDesc: "خطر الصواعق. يرجى البقاء في مكان مغلق.",
+          windTitle: "تحذير من رياح شديدة",
+          windDesc: "هبات رياح قوية. يرجى توخي الحذر.",
+          heatTitle: "تحذير من حرارة شديدة",
+          heatDesc: "خطر ضربات الشمس والجفاف. اشرب الماء وتجنب الشمس.",
+          freezeTitle: "تنبيه انخفاض الحرارة",
+          freezeDesc: "درجات حرارة قريبة من التجمد. ارتدِ ملابس دافئة.",
+          rainTitle: "هطول أمطار",
+          rainDesc: "أرضيات مبللة وانخفاض الرؤية. احمل مظلة.",
+          breezyTitle: "أجواء عليلة ومعتدلة",
+          breezyDesc: "رياح خفيفة إلى معتدلة مناسبة للأنشطة.",
+          clearSky: "سماء صافية",
+          clearNight: "ليلة صافية",
+          partlyCloudy: "غائم جزئياً",
+          scatteredClouds: "سحب متفرقة",
+          overcast: "غائم كلياً",
+          fogHaze: "ضباب وسديم",
+          drizzle: "رذاذ خفيف",
+          rainShowers: "زخات مطر",
+          snowfall: "تساقط ثلوج",
+          heavyRain: "أمطار غزيرة",
+          thunderstorm: "عاصفة رعدية",
+          fairWeather: "طقس معتدل",
+          today: "اليوم",
+          now: "الآن"
+        }
+      };
+
+      // Default fallback starting city (Saved automatically to localStorage on user selection)
+      const DEFAULT_CITY = {
+        name: "Algiers",
+        country: "Algeria",
+        countryCode: "DZ",
+        region: "Algiers Wilaya",
+        lat: 36.7538,
+        lon: 3.0588
+      };
+
+      // App State (Zero background polling intervals)
+      const state = {
+        city: JSON.parse(localStorage.getItem("wx_selected_city") || JSON.stringify(DEFAULT_CITY)),
+        tempUnit: localStorage.getItem("wx_unit") || "c", // 'c' or 'f'
+        lang: localStorage.getItem("wx_lang") || "en", // 'en' or 'ar'
+        weatherData: null,
+        activeOverlay: null,
+        isOffline: false
+      };
+
+      // DOM Elements Cache
+      const el = {
+        wallpaper: document.getElementById("wallpaper-container"),
+        refreshBtn: document.getElementById("refresh-btn"),
+        refreshIcon: document.getElementById("refresh-icon"),
+        openSettingsBtn: document.getElementById("open-settings-btn"),
+        closeSettingsBackBtn: document.getElementById("close-settings-back-btn"),
+        settingsModal: document.getElementById("settings-modal"),
+        settingUnitC: document.getElementById("setting-unit-c"),
+        settingUnitF: document.getElementById("setting-unit-f"),
+        settingLangEn: document.getElementById("setting-lang-en"),
+        settingLangAr: document.getElementById("setting-lang-ar"),
+        searchInput: document.getElementById("global-search-input"),
+        searchResultsDropdown: document.getElementById("search-results-dropdown"),
+        searchResultsList: document.getElementById("search-results-list"),
+        clearSearchBtn: document.getElementById("clear-search-btn"),
+        offlineErrorContainer: document.getElementById("offline-error-container"),
+        offlineErrorMessage: document.getElementById("offline-error-message"),
+        retryBtn: document.getElementById("retry-btn"),
+        retryBtnLabel: document.getElementById("retry-btn-label"),
+        mainWeatherContent: document.getElementById("main-weather-content"),
+        cityName: document.getElementById("city-name"),
+        cityRegion: document.getElementById("city-region"),
+        countryPill: document.getElementById("country-pill"),
+        currentTemp: document.getElementById("current-temp"),
+        tempUnitSymbol: document.getElementById("temp-unit-symbol"),
+        apparentTemp: document.getElementById("apparent-temp"),
+        tempMax: document.getElementById("temp-max"),
+        tempMin: document.getElementById("temp-min"),
+        weatherDesc: document.getElementById("weather-description"),
+        heroIcon: document.getElementById("hero-weather-icon"),
+        cardTemp: document.getElementById("card-temperature"),
+        cardWind: document.getElementById("card-wind"),
+        cardUV: document.getElementById("card-uv"),
+        cardHumidity: document.getElementById("card-humidity"),
+        cardMoon: document.getElementById("card-moon"),
+        cardSafety: document.getElementById("card-safety"),
+        windSpeed: document.getElementById("wind-speed"),
+        windUnitLabel: document.getElementById("wind-unit-label"),
+        windCardinal: document.getElementById("wind-cardinal"),
+        windGustLabel: document.getElementById("wind-gust-label"),
+        windCompassNeedle: document.getElementById("wind-compass-needle"),
+        uvIndexVal: document.getElementById("uv-index-val"),
+        uvLevelLabel: document.getElementById("uv-level-label"),
+        uvProgress: document.getElementById("uv-progress"),
+        uvAdviceHint: document.getElementById("uv-advice-hint"),
+        humidityValue: document.getElementById("humidity-value"),
+        humidityProgress: document.getElementById("humidity-progress"),
+        dewPointLabel: document.getElementById("dew-point-label"),
+        moonPhaseIcon: document.getElementById("moon-phase-icon"),
+        moonPhaseName: document.getElementById("moon-phase-name"),
+        moonIllumination: document.getElementById("moon-illumination"),
+        lunarCycleHint: document.getElementById("lunar-cycle-hint"),
+        safetyScorePill: document.getElementById("safety-score-pill"),
+        safetyTitle: document.getElementById("safety-title"),
+        safetyDesc: document.getElementById("safety-desc"),
+        forecastContainer: document.getElementById("forecast-daily-container"),
+        weatherAlertCard: document.getElementById("weather-alert-card"),
+        alertIconContainer: document.getElementById("alert-icon-container"),
+        alertBadge: document.getElementById("alert-badge"),
+        alertTitle: document.getElementById("alert-title"),
+        alertDescription: document.getElementById("alert-description"),
+        detailOverlay: document.getElementById("detail-overlay"),
+        overlayTitle: document.getElementById("overlay-title"),
+        overlayContent: document.getElementById("overlay-content"),
+        overlaySingleBackBtn: document.getElementById("overlay-single-back-btn")
+      };
+
+      function t(key) {
+        return (i18n[state.lang] && i18n[state.lang][key]) || (i18n.en[key] || key);
+      }
+
+      function updateUITexts() {
+        document.documentElement.lang = state.lang;
+        document.documentElement.dir = state.lang === "ar" ? "rtl" : "ltr";
+
+        // Update all elements with data-i18n
+        document.querySelectorAll("[data-i18n]").forEach(node => {
+          const key = node.getAttribute("data-i18n");
+          if (key && i18n[state.lang] && i18n[state.lang][key]) {
+            node.textContent = i18n[state.lang][key];
+          }
+        });
+
+        // Search input placeholder
+        el.searchInput.placeholder = t("searchPlaceholder");
+        el.offlineErrorMessage.textContent = t("noInternet");
+        el.retryBtnLabel.textContent = t("retry");
+
+        // Update settings modal button styles
+        updateSettingsModalStyles();
+
+        // Refresh weather labels if data exists
+        if (state.weatherData) {
+          renderWeather();
+        }
+      }
+
+      function updateSettingsModalStyles() {
+        // Temperature unit active style
+        if (state.tempUnit === "c") {
+          el.settingUnitC.className = "py-2.5 rounded-xl text-xs font-bold border bg-cyan-500/20 text-cyan-300 border-cyan-500/40 shadow-sm";
+          el.settingUnitF.className = "py-2.5 rounded-xl text-xs font-bold border bg-white/5 text-slate-400 border-white/10 hover:border-white/20";
+        } else {
+          el.settingUnitF.className = "py-2.5 rounded-xl text-xs font-bold border bg-cyan-500/20 text-cyan-300 border-cyan-500/40 shadow-sm";
+          el.settingUnitC.className = "py-2.5 rounded-xl text-xs font-bold border bg-white/5 text-slate-400 border-white/10 hover:border-white/20";
+        }
+
+        // Language active style
+        if (state.lang === "en") {
+          el.settingLangEn.className = "py-2.5 rounded-xl text-xs font-bold border bg-cyan-500/20 text-cyan-300 border-cyan-500/40 shadow-sm";
+          el.settingLangAr.className = "py-2.5 rounded-xl text-xs font-bold border bg-white/5 text-slate-400 border-white/10 hover:border-white/20 font-sans";
+        } else {
+          el.settingLangAr.className = "py-2.5 rounded-xl text-xs font-bold border bg-cyan-500/20 text-cyan-300 border-cyan-500/40 shadow-sm font-sans";
+          el.settingLangEn.className = "py-2.5 rounded-xl text-xs font-bold border bg-white/5 text-slate-400 border-white/10 hover:border-white/20";
+        }
+      }
+
+      // WMO Weather Metadata
+      function getWeatherMeta(code, isDay = 1) {
+        switch (code) {
+          case 0:
+            return {
+              label: isDay ? t("clearSky") : t("clearNight"),
+              type: isDay ? "clear-day" : "clear-night",
+              icon: isDay ? getSunSVG() : getMoonSVG()
+            };
+          case 1:
+          case 2:
+            return {
+              label: isDay ? t("partlyCloudy") : t("scatteredClouds"),
+              type: isDay ? "cloudy" : "clear-night",
+              icon: isDay ? getPartlyCloudySVG() : getCloudyNightSVG()
+            };
+          case 3:
+            return {
+              label: t("overcast"),
+              type: "cloudy",
+              icon: getCloudSVG()
+            };
+          case 45:
+          case 48:
+            return {
+              label: t("fogHaze"),
+              type: "cloudy",
+              icon: getFogSVG()
+            };
+          case 51:
+          case 53:
+          case 55:
+            return {
+              label: t("drizzle"),
+              type: "rainy",
+              icon: getRainSVG()
+            };
+          case 61:
+          case 63:
+          case 65:
+            return {
+              label: t("rainShowers"),
+              type: "rainy",
+              icon: getRainSVG()
+            };
+          case 71:
+          case 73:
+          case 75:
+            return {
+              label: t("snowfall"),
+              type: "snowy",
+              icon: getSnowSVG()
+            };
+          case 80:
+          case 81:
+          case 82:
+            return {
+              label: t("heavyRain"),
+              type: "rainy",
+              icon: getRainSVG()
+            };
+          case 95:
+          case 96:
+          case 99:
+            return {
+              label: t("thunderstorm"),
+              type: "stormy",
+              icon: getThunderSVG()
+            };
+          default:
+            return {
+              label: t("fairWeather"),
+              type: isDay ? "clear-day" : "clear-night",
+              icon: isDay ? getSunSVG() : getMoonSVG()
+            };
+        }
+      }
+
+      // High-Quality SVG Icons
+      function getSunSVG() {
+        return `<svg class="w-14 h-14 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <circle cx="12" cy="12" r="5" fill="#f59e0b" fill-opacity="0.25"/>
+          <line x1="12" y1="1" x2="12" y2="3"/>
+          <line x1="12" y1="21" x2="12" y2="23"/>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+          <line x1="1" y1="12" x2="3" y2="12"/>
+          <line x1="21" y1="12" x2="23" y2="12"/>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+        </svg>`;
+      }
+
+      function getMoonSVG() {
+        return `<svg class="w-14 h-14 text-indigo-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" fill="#818cf8" fill-opacity="0.25"/>
+        </svg>`;
+      }
+
+      function getPartlyCloudySVG() {
+        return `<svg class="w-14 h-14" viewBox="0 0 48 48" fill="none">
+          <circle cx="28" cy="18" r="8" fill="#f59e0b" opacity="0.95"/>
+          <path d="M14 34H34C37.3 34 40 31.3 40 28C40 24.7 37.3 22 34 22C33.8 22 33.6 22 33.4 22.1C32.4 17.5 28.3 14 23.5 14C17.7 14 13 18.7 13 24.5C13 25.1 13.1 25.7 13.2 26.3C10.8 27.2 9 29.5 9 32.2C9 35.4 11.2 38 14 34Z" fill="#94a3b8" opacity="0.95"/>
+        </svg>`;
+      }
+
+      function getCloudyNightSVG() {
+        return `<svg class="w-14 h-14" viewBox="0 0 48 48" fill="none">
+          <path d="M35 18A7 7 0 1 1 28 11A5 5 0 0 0 35 18Z" fill="#818cf8"/>
+          <path d="M14 34H34C37.3 34 40 31.3 40 28C40 24.7 37.3 22 34 22C33.8 22 33.6 22 33.4 22.1C32.4 17.5 28.3 14 23.5 14C17.7 14 13 18.7 13 24.5C13 25.1 13.1 25.7 13.2 26.3C10.8 27.2 9 29.5 9 32.2C9 35.4 11.2 38 14 34Z" fill="#64748b" opacity="0.95"/>
+        </svg>`;
+      }
+
+      function getCloudSVG() {
+        return `<svg class="w-14 h-14 text-slate-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z" fill="#94a3b8" fill-opacity="0.25"/>
+        </svg>`;
+      }
+
+      function getFogSVG() {
+        return `<svg class="w-14 h-14 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M4 14h16M4 18h16M4 10h16M7 6h10" stroke-linecap="round"/>
+        </svg>`;
+      }
+
+      function getRainSVG() {
+        return `<svg class="w-14 h-14 text-cyan-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M16 13v7M8 13v7M12 15v7M20 16.58A5 5 0 0 0 18 7h-1.26A8 8 0 1 0 4 15.25" stroke-linecap="round"/>
+        </svg>`;
+      }
+
+      function getSnowSVG() {
+        return `<svg class="w-14 h-14 text-blue-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M20 17.58A5 5 0 0 0 18 8h-1.26A8 8 0 1 0 4 16.25"/>
+          <line x1="8" y1="16" x2="8" y2="16.01" stroke-width="3" stroke-linecap="round"/>
+          <line x1="8" y1="20" x2="8" y2="20.01" stroke-width="3" stroke-linecap="round"/>
+          <line x1="12" y1="18" x2="12" y2="18.01" stroke-width="3" stroke-linecap="round"/>
+          <line x1="16" y1="16" x2="16" y2="16.01" stroke-width="3" stroke-linecap="round"/>
+          <line x1="16" y1="20" x2="16" y2="20.01" stroke-width="3" stroke-linecap="round"/>
+        </svg>`;
+      }
+
+      function getThunderSVG() {
+        return `<svg class="w-14 h-14 text-amber-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M19 16.9A5 5 0 0 0 18 7h-1.26A8 8 0 1 0 4 15.25"/>
+          <polyline points="13 11 9 17 15 17 11 23" fill="#f59e0b" fill-opacity="0.3"/>
+        </svg>`;
+      }
+
+      function getMiniWeatherIcon(code) {
+        if (code === 0) return `<svg class="w-4 h-4 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="5" stroke-width="2" fill="#f59e0b" fill-opacity="0.2"/><path stroke-linecap="round" stroke-width="2" d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2"/></svg>`;
+        if (code <= 3) return `<svg class="w-4 h-4 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 00-9.78 2.096A4.001 4.001 0 003 15z" /></svg>`;
+        if (code <= 67 || (code >= 80 && code <= 82)) return `<svg class="w-4 h-4 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" /></svg>`;
+        if (code >= 95) return `<svg class="w-4 h-4 text-amber-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>`;
+        return `<svg class="w-4 h-4 text-blue-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3" /></svg>`;
+      }
+
+      // Wind Calculations
+      function getCardinalDirection(deg) {
+        const dirs = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"];
+        const idx = Math.round((deg % 360) / 22.5) % 16;
+        return dirs[idx];
+      }
+
+      function getBeaufortScale(speedKmh) {
+        if (speedKmh < 1) return { force: 0, desc: state.lang === 'ar' ? 'هدوء' : 'Calm', effect: state.lang === 'ar' ? 'الدخان يرتفع عمودياً' : 'Smoke rises vertically.' };
+        if (speedKmh <= 5) return { force: 1, desc: state.lang === 'ar' ? 'نسيم خفيف جداً' : 'Light Air', effect: state.lang === 'ar' ? 'انحراف خفيف للدخان' : 'Smoke drift indicates direction.' };
+        if (speedKmh <= 11) return { force: 2, desc: state.lang === 'ar' ? 'نسيم عليل' : 'Light Breeze', effect: state.lang === 'ar' ? 'حركة خفيفة لأوراق الشجر' : 'Wind felt on face; leaves rustle.' };
+        if (speedKmh <= 19) return { force: 3, desc: state.lang === 'ar' ? 'نسيم لطيف' : 'Gentle Breeze', effect: state.lang === 'ar' ? 'حركة مستمرة للأغصان' : 'Leaves and small twigs in motion.' };
+        if (speedKmh <= 28) return { force: 4, desc: state.lang === 'ar' ? 'نسيم معتدل' : 'Moderate Breeze', effect: state.lang === 'ar' ? 'حركة الأغصان وتطاير الغبار' : 'Small branches move, dust raised.' };
+        if (speedKmh <= 38) return { force: 5, desc: state.lang === 'ar' ? 'نسيم نشط' : 'Fresh Breeze', effect: state.lang === 'ar' ? 'تمايل الأشجار الصغيرة' : 'Small trees in leaf begin to sway.' };
+        if (speedKmh <= 49) return { force: 6, desc: state.lang === 'ar' ? 'رياح قوية' : 'Strong Breeze', effect: state.lang === 'ar' ? 'صعوبة استخدام المظلات' : 'Large branches move; umbrella difficult.' };
+        if (speedKmh <= 61) return { force: 7, desc: state.lang === 'ar' ? 'رياح عاتية خفيفة' : 'Near Gale', effect: state.lang === 'ar' ? 'صعوبة السير ضد الرياح' : 'Walking against wind is difficult.' };
+        if (speedKmh <= 74) return { force: 8, desc: state.lang === 'ar' ? 'عاصفة هوائية' : 'Gale', effect: state.lang === 'ar' ? 'تكسر بعض الأغصان' : 'Twigs break off trees; progress impeded.' };
+        return { force: 9, desc: state.lang === 'ar' ? 'عاصفة شديدة' : 'Strong Gale', effect: state.lang === 'ar' ? 'أضرار سطحية محتملة' : 'Slight structural damage occurs.' };
+      }
+
+      // UV Index Analysis
+      function getUVLevel(uv) {
+        if (uv <= 2) return { text: state.lang === 'ar' ? 'منخفض' : 'Low', color: 'text-emerald-400', bg: 'bg-emerald-400', advice: state.lang === 'ar' ? 'حماية طفيفة مطلوبة' : 'Minimal sun protection required.' };
+        if (uv <= 5) return { text: state.lang === 'ar' ? 'متوسط' : 'Moderate', color: 'text-amber-400', bg: 'bg-amber-400', advice: state.lang === 'ar' ? 'استخدم واقي الشمس والنظارات' : 'Wear sunscreen & sunglasses.' };
+        if (uv <= 7) return { text: state.lang === 'ar' ? 'مرتفع' : 'High', color: 'text-orange-400', bg: 'bg-orange-400', advice: state.lang === 'ar' ? 'الحماية ضرورية وقت الظهيرة' : 'Protection essential; seek shade.' };
+        if (uv <= 10) return { text: state.lang === 'ar' ? 'مرتفع جداً' : 'Very High', color: 'text-rose-400', bg: 'bg-rose-400', advice: state.lang === 'ar' ? 'تجنب أشعة الشمس المباشرة' : 'Take extra precautions; avoid sun.' };
+        return { text: state.lang === 'ar' ? 'شديد الخطورة' : 'Extreme', color: 'text-purple-400', bg: 'bg-purple-400', advice: state.lang === 'ar' ? 'ابق في الظل وتجنب الخروج' : 'Stay indoors or in full shade!' };
+      }
+
+      // Moon Phase Calculator
+      function calculateMoonPhase(date = new Date()) {
+        let year = date.getFullYear();
+        let month = date.getMonth() + 1;
+        let day = date.getDate();
+
+        if (month < 3) {
+          year--;
+          month += 12;
+        }
+
+        let c = 365.25 * year;
+        let e = 30.6 * month;
+        let jd = c + e + day - 694039.09;
+        jd /= 29.5305882;
+        let b = parseInt(jd);
+        jd -= b;
+        let phaseIndex = Math.round(jd * 8);
+        if (phaseIndex >= 8) phaseIndex = 0;
+
+        const ageDays = (jd * 29.5305882).toFixed(1);
+        const illumination = Math.round((1 - Math.cos(jd * 2 * Math.PI)) / 2 * 100);
+
+        const phaseNamesEn = [
+          "New Moon",
+          "Waxing Crescent",
+          "First Quarter",
+          "Waxing Gibbous",
+          "Full Moon",
+          "Waning Gibbous",
+          "Last Quarter",
+          "Waning Crescent"
+        ];
+
+        const phaseNamesAr = [
+          "محاق (قمر جديد)",
+          "هلال متزايد",
+          "تربيع أول",
+          "أحدب متزايد",
+          "بدر مكتمل",
+          "أحدب متناقص",
+          "تربيع أخير",
+          "هلال متناقص"
+        ];
+
+        const name = state.lang === 'ar' ? phaseNamesAr[phaseIndex] : phaseNamesEn[phaseIndex];
+
+        return {
+          name: name,
+          illumination: illumination,
+          ageDays: ageDays,
+          index: phaseIndex
+        };
+      }
+
+      function renderMoonSVG(phaseIndex, illumination) {
+        return `<svg class="w-8 h-8 text-amber-100" viewBox="0 0 32 32" fill="none">
+          <circle cx="16" cy="16" r="13" fill="#0f172a" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/>
+          <path d="M16 3 A 13 13 0 0 1 16 29 A ${13 * Math.abs((illumination - 50) / 50)} 13 0 0 ${illumination > 50 ? '1' : '0'} 16 3" fill="#fde68a" opacity="0.95"/>
+        </svg>`;
+      }
+
+      // Astronomical Solar Times Estimation for Coordinates
+      function estimateSunTimes(lat, lon, date = new Date()) {
+        const dayOfYear = Math.floor((date - new Date(date.getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
+        const declination = 23.45 * Math.sin((360 / 365) * (dayOfYear - 81) * (Math.PI / 180));
+        const latRad = lat * (Math.PI / 180);
+        const decRad = declination * (Math.PI / 180);
+        const cosH = -Math.tan(latRad) * Math.tan(decRad);
+        let sunriseH = 6;
+        let sunsetH = 18;
+        if (cosH >= -1 && cosH <= 1) {
+          const H = (Math.acos(cosH) * (180 / Math.PI)) / 15;
+          sunriseH = 12 - H;
+          sunsetH = 12 + H;
+        }
+        const srHour = Math.floor(sunriseH);
+        const srMin = Math.floor((sunriseH - srHour) * 60);
+        const ssHour = Math.floor(sunsetH);
+        const ssMin = Math.floor((sunsetH - ssHour) * 60);
+        return {
+          sunrise: `${String(srHour).padStart(2, '0')}:${String(srMin).padStart(2, '0')}`,
+          sunset: `${String(ssHour).padStart(2, '0')}:${String(ssMin).padStart(2, '0')}`
+        };
+      }
+
+      // Outdoor Safety Assessment
+      function computeOutdoorSafety(tempC, windKmh, rainMm, weatherCode, uv) {
+        let score = 100;
+        let status = "safe";
+        let title = t("safeTitle");
+        let desc = t("safeDesc");
+
+        if (weatherCode >= 95) {
+          score = 15;
+          status = "danger";
+          title = t("stormTitle");
+          desc = t("stormDesc");
+        } else if (windKmh > 55) {
+          score = 28;
+          status = "warning";
+          title = t("windTitle");
+          desc = t("windDesc");
+        } else if (tempC > 38) {
+          score = 35;
+          status = "danger";
+          title = t("heatTitle");
+          desc = t("heatDesc");
+        } else if (tempC < 1) {
+          score = 42;
+          status = "warning";
+          title = t("freezeTitle");
+          desc = t("freezeDesc");
+        } else if (rainMm > 4 || (weatherCode >= 61 && weatherCode <= 67)) {
+          score = 52;
+          status = "caution";
+          title = t("rainTitle");
+          desc = t("rainDesc");
+        } else if (windKmh > 32) {
+          score = 72;
+          status = "caution";
+          title = t("breezyTitle");
+          desc = t("breezyDesc");
+        }
+
+        return { score, status, title, desc };
+      }
+
+      // Dynamic Wallpaper Updater
+      function updateWallpaper(conditionType) {
+        el.wallpaper.className = "";
+        switch (conditionType) {
+          case "clear-night":
+            el.wallpaper.className = "wall-clear-night";
+            break;
+          case "cloudy":
+            el.wallpaper.className = "wall-cloudy";
+            break;
+          case "rainy":
+            el.wallpaper.className = "wall-rainy";
+            break;
+          case "stormy":
+            el.wallpaper.className = "wall-stormy";
+            break;
+          case "snowy":
+            el.wallpaper.className = "wall-snowy";
+            break;
+          case "clear-day":
+          default:
+            el.wallpaper.className = "wall-clear-day";
+            break;
+        }
+      }
+
+      // Fetch Weather Data (Requirement 1: Official live parameters from Open-Meteo Forecast API)
+      async function fetchWeather() {
+        el.weatherDesc.textContent = state.lang === 'ar' ? 'جارٍ التحديث...' : 'Updating...';
+        el.refreshIcon.classList.add("animate-spin");
+
+        // Hide offline box during request attempt
+        el.offlineErrorContainer.classList.add("hidden");
+
+        const unitParam = state.tempUnit === "f" ? "&temperature_unit=fahrenheit&wind_speed_unit=mph" : "";
+
+        // Strictly requested Open-Meteo endpoint & parameters
+        const url = `https://api.open-meteo.com/v1/forecast?latitude=${state.city.lat}&longitude=${state.city.lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,wind_speed_10m,wind_direction_10m&daily=temperature_2m_max,temperature_2m_min,uv_index_max&timezone=auto${unitParam}`;
+
+        try {
+          const res = await fetch(url);
+          if (!res.ok) throw new Error("Network request failed");
+          const data = await res.json();
+          state.weatherData = data;
+          state.isOffline = false;
+          el.mainWeatherContent.classList.remove("opacity-50");
+          renderWeather();
+        } catch (err) {
+          // Show clear centered message
+          state.isOffline = true;
+          el.weatherDesc.textContent = state.lang === 'ar' ? 'تعذر الاتصال' : 'Connection failed';
+          el.offlineErrorMessage.textContent = t("noInternet");
+          el.offlineErrorContainer.classList.remove("hidden");
+          el.mainWeatherContent.classList.add("opacity-50");
+        } finally {
+          el.refreshIcon.classList.remove("animate-spin");
+        }
+      }
+
+      // Render Dashboard
+      function renderWeather() {
+        if (!state.weatherData) return;
+        const cur = state.weatherData.current;
+        const daily = state.weatherData.daily;
+
+        // Proper city names strictly preserved in original spelling
+        el.cityName.textContent = state.city.name;
+        el.cityRegion.textContent = state.city.region ? `${state.city.region}, ${state.city.country}` : state.city.country;
+        el.countryPill.textContent = state.city.countryCode || "DZ";
+
+        // Current Temp
+        el.currentTemp.textContent = Math.round(cur.temperature_2m);
+        el.tempUnitSymbol.textContent = state.tempUnit === "f" ? "°F" : "°C";
+
+        // Apparent & Max / Min
+        el.apparentTemp.textContent = `${Math.round(cur.apparent_temperature)}°`;
+        el.tempMax.textContent = `${Math.round(daily.temperature_2m_max[0])}°`;
+        el.tempMin.textContent = `${Math.round(daily.temperature_2m_min[0])}°`;
+
+        // Weather meta & Dynamic background
+        const meta = getWeatherMeta(cur.weather_code, cur.is_day);
+        el.weatherDesc.textContent = meta.label;
+        el.heroIcon.innerHTML = meta.icon;
+        updateWallpaper(meta.type);
+
+        // Wind Block
+        const windVal = Math.round(cur.wind_speed_10m);
+        const windUnit = state.tempUnit === "f" ? (state.lang === 'ar' ? 'ميل/س' : 'mph') : (state.lang === 'ar' ? 'كم/س' : 'km/h');
+        el.windSpeed.textContent = windVal;
+        el.windUnitLabel.textContent = windUnit;
+        const cardDir = getCardinalDirection(cur.wind_direction_10m);
+        el.windCardinal.textContent = `${cardDir} (${Math.round(cur.wind_direction_10m)}°)`;
+        el.windCompassNeedle.style.transform = `rotate(${cur.wind_direction_10m}deg)`;
+        const gustsVal = cur.wind_gusts_10m !== undefined ? Math.round(cur.wind_gusts_10m) : Math.round(cur.wind_speed_10m * 1.3);
+        el.windGustLabel.textContent = `${state.lang === 'ar' ? 'الهبات:' : 'Gusts:'} ${gustsVal} ${windUnit}`;
+
+        // UV Index Block - True live peak value from daily forecast array data.daily.uv_index_max[0] (Requirement 2)
+        const uvVal = (daily && daily.uv_index_max && daily.uv_index_max[0] !== undefined)
+          ? Number(daily.uv_index_max[0].toFixed(1))
+          : 0;
+        el.uvIndexVal.textContent = uvVal;
+        const uvInfo = getUVLevel(uvVal);
+        el.uvLevelLabel.textContent = uvInfo.text;
+        el.uvLevelLabel.className = `text-xs font-semibold ${uvInfo.color}`;
+        el.uvProgress.style.width = `${Math.min(100, (uvVal / 11) * 100)}%`;
+        el.uvAdviceHint.textContent = uvInfo.advice;
+
+        // Humidity Block
+        el.humidityValue.textContent = cur.relative_humidity_2m;
+        el.humidityProgress.style.width = `${Math.min(100, Math.max(0, cur.relative_humidity_2m))}%`;
+        const approxDew = cur.temperature_2m - ((100 - cur.relative_humidity_2m) / 5);
+        el.dewPointLabel.textContent = `${state.lang === 'ar' ? 'نقطة الندى:' : 'Dew point:'} ${Math.round(approxDew)}°`;
+
+        // Moon Phase Block
+        const moon = calculateMoonPhase();
+        el.moonPhaseIcon.innerHTML = renderMoonSVG(moon.index, moon.illumination);
+        el.moonPhaseName.textContent = moon.name;
+        el.moonIllumination.textContent = `${moon.illumination}% ${state.lang === 'ar' ? 'إضاءة' : 'Illum.'}`;
+        el.lunarCycleHint.textContent = `${state.lang === 'ar' ? 'يوم القمر' : 'Lunar day'} ${moon.ageDays}`;
+
+        // Outdoor Safety Block
+        const tempC = state.tempUnit === "f" ? (cur.temperature_2m - 32) * 5 / 9 : cur.temperature_2m;
+        const windKmh = state.tempUnit === "f" ? cur.wind_speed_10m * 1.60934 : cur.wind_speed_10m;
+        const safety = computeOutdoorSafety(tempC, windKmh, cur.precipitation, cur.weather_code, uvVal);
+
+        el.safetyScorePill.textContent = `${safety.score}/100`;
+        el.safetyTitle.textContent = safety.title;
+        el.safetyDesc.textContent = safety.desc;
+
+        if (safety.status === "danger") {
+          el.safetyTitle.className = "text-xs font-bold text-rose-400 mt-0.5";
+          el.safetyScorePill.className = "text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-rose-500/10 text-rose-400 border border-rose-500/30";
+        } else if (safety.status === "warning") {
+          el.safetyTitle.className = "text-xs font-bold text-amber-400 mt-0.5";
+          el.safetyScorePill.className = "text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/30";
+        } else {
+          el.safetyTitle.className = "text-xs font-bold text-emerald-400 mt-0.5";
+          el.safetyScorePill.className = "text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30";
+        }
+
+        // Daily Forecast Strip
+        renderDailyForecast(daily);
+
+        // Dynamic Weather Alert Banner
+        renderWeatherAlert(cur, daily, tempC, windKmh, uvVal);
+      }
+
+      // Dynamic Weather Alerts
+      function renderWeatherAlert(cur, daily, tempC, windKmh, uvVal) {
+        if (!el.weatherAlertCard) return;
+        let alert = null;
+        const currentGusts = cur.wind_gusts_10m !== undefined ? cur.wind_gusts_10m : (cur.wind_speed_10m * 1.3);
+
+        if (cur.weather_code >= 95) {
+          alert = {
+            badge: state.lang === "ar" ? "تحذير جوي" : "WARNING",
+            title: state.lang === "ar" ? "تحذير من عواصف رعدية نشطة" : "Severe Thunderstorm Warning",
+            desc: state.lang === "ar" ? "عواصف رعدية نشطة مصحوبة برياح قوية وصواعق. يرجى تجنب الأماكن المفتوحة." : "Active thunderstorm in effect with lightning and squall hazards. Seek shelter indoors.",
+            icon: `<svg class="w-5 h-5 text-rose-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>`,
+            bg: "bg-rose-500/10 border-rose-500/30 text-rose-400",
+            badgeBg: "bg-rose-500/20 text-rose-300 border border-rose-500/40"
+          };
+        } else if (windKmh > 48 || currentGusts > 65) {
+          alert = {
+            badge: state.lang === "ar" ? "تنبيه رياح" : "HIGH WIND",
+            title: state.lang === "ar" ? "تنبيه من هبات رياح قوية" : "High Wind Hazard Advisory",
+            desc: state.lang === "ar" ? `هبات رياح سريعة تصل إلى ${Math.round(currentGusts)} كم/ساعة. توخ الحذر على الطرق المفتوحة.` : `Rapid gusts detected up to ${Math.round(currentGusts)} km/h. Secure loose outdoor objects.`,
+            icon: `<svg class="w-5 h-5 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>`,
+            bg: "bg-amber-500/10 border-amber-500/30 text-amber-400",
+            badgeBg: "bg-amber-500/20 text-amber-300 border border-amber-500/40"
+          };
+        } else if (tempC >= 36) {
+          alert = {
+            badge: state.lang === "ar" ? "موجة حر" : "HEAT ADVISORY",
+            title: state.lang === "ar" ? "تحذير من درجات حرارة مرتفعة جداً" : "Excessive Heat Advisory",
+            desc: state.lang === "ar" ? "ارتفاع ملحوظ في درجات الحرارة. احرص على شرب السوائل وتجنب أشعة الشمس المباشرة." : "Dangerous high temperatures. Stay hydrated, avoid midday sun, and remain in cool places.",
+            icon: `<svg class="w-5 h-5 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>`,
+            bg: "bg-orange-500/10 border-orange-500/30 text-orange-400",
+            badgeBg: "bg-orange-500/20 text-orange-300 border border-orange-500/40"
+          };
+        } else if (tempC <= 0) {
+          alert = {
+            badge: state.lang === "ar" ? "انجماد" : "FREEZE CAUTION",
+            title: state.lang === "ar" ? "تنبيه انخفاض درجات الحرارة للتجمد" : "Freezing Temperatures Advisory",
+            desc: state.lang === "ar" ? "درجات الحرارة عند أو تحت الصفر المئوي مع خطر الانجماد الصباحي." : "Sub-freezing temperatures observed. Watch for frost and black ice on bridges and roads.",
+            icon: `<svg class="w-5 h-5 text-cyan-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v18m9-9H3m15.364-6.364L5.636 18.364m0-12.728l12.728 12.728"/></svg>`,
+            bg: "bg-cyan-500/10 border-cyan-500/30 text-cyan-300",
+            badgeBg: "bg-cyan-500/20 text-cyan-300 border border-cyan-500/40"
+          };
+        } else if (uvVal >= 8) {
+          alert = {
+            badge: state.lang === "ar" ? "أشعة فوق بنفسجية" : "UV ALERT",
+            title: state.lang === "ar" ? "مؤشر أشعة فوق بنفسجية شديد الخطورة" : "Very High UV Radiation Alert",
+            desc: state.lang === "ar" ? "خطر مرتفع للتعرض للأشعة فوق البنفسجية بدون حماية. استخدم واقي الشمس وغطاء الرأس." : "High risk of skin and eye damage from unprotected sun exposure. Wear UV protection.",
+            icon: `<svg class="w-5 h-5 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>`,
+            bg: "bg-purple-500/10 border-purple-500/30 text-purple-400",
+            badgeBg: "bg-purple-500/20 text-purple-300 border border-purple-500/40"
+          };
+        } else if (cur.precipitation > 3 || cur.weather_code === 65 || cur.weather_code === 82) {
+          alert = {
+            badge: state.lang === "ar" ? "أمطار غزيرة" : "HEAVY RAIN",
+            title: state.lang === "ar" ? "تنبيه هطول أمطار غزيرة" : "Heavy Rain & Surface Wetness",
+            desc: state.lang === "ar" ? "تجمعات مائية وانخفاض في مدى الرؤية الأفقية. يرجى توخي الحذر عند القيادة." : "Significant rainfall causing slick roadways and reduced visibility. Drive cautiously.",
+            icon: `<svg class="w-5 h-5 text-sky-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>`,
+            bg: "bg-sky-500/10 border-sky-500/30 text-sky-400",
+            badgeBg: "bg-sky-500/20 text-sky-300 border border-sky-500/40"
+          };
+        }
+
+        if (alert) {
+          el.weatherAlertCard.className = `mb-3 glass-panel rounded-2xl p-3.5 border transition-all ${alert.bg}`;
+          el.alertIconContainer.innerHTML = alert.icon;
+          el.alertBadge.className = `text-[10px] font-mono font-bold uppercase px-1.5 py-0.5 rounded ${alert.badgeBg}`;
+          el.alertBadge.textContent = alert.badge;
+          el.alertTitle.textContent = alert.title;
+          el.alertDescription.textContent = alert.desc;
+          el.weatherAlertCard.classList.remove("hidden");
+        } else {
+          el.weatherAlertCard.classList.add("hidden");
+        }
+      }
+
+      // Render 7-Day Forecast Strip
+      function renderDailyForecast(daily) {
+        if (!daily || !daily.time) return;
+        const daysEn = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+        const daysAr = ["الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"];
+        const days = state.lang === "ar" ? daysAr : daysEn;
+
+        let html = "";
+        const count = Math.min(7, daily.time.length);
+
+        for (let i = 0; i < count; i++) {
+          const dateObj = new Date(daily.time[i]);
+          const dayName = i === 0 ? t("today") : days[dateObj.getDay()];
+          const code = (daily.weather_code && daily.weather_code[i] !== undefined) ? daily.weather_code[i] : (state.weatherData.current ? state.weatherData.current.weather_code : 0);
+          const icon = getMiniWeatherIcon(code);
+          const max = Math.round(daily.temperature_2m_max[i]);
+          const min = Math.round(daily.temperature_2m_min[i]);
+
+          html += `
+            <div class="glass-card rounded-xl px-3 py-2 flex items-center justify-between text-xs border border-white/5">
+              <span class="w-16 font-semibold text-slate-300 text-[11px]">${dayName}</span>
+              <div class="flex items-center gap-1.5">${icon}</div>
+              <div class="flex items-center gap-3 font-mono">
+                <span class="text-white font-bold">${max}°</span>
+                <span class="text-slate-400">${min}°</span>
+              </div>
+            </div>
+          `;
+        }
+        el.forecastContainer.innerHTML = html;
+      }
+
+      // ==========================================
+      // FULL INTERFACE OVERLAYS
+      // REQUIREMENT 4: Single Back Button Only at the top
+      // ==========================================
+
+      function openOverlay(type) {
+        if (!state.weatherData) return;
+        state.activeOverlay = type;
+        el.detailOverlay.classList.remove("hidden");
+        document.body.style.overflow = "hidden";
+
+        switch (type) {
+          case "temperature":
+            renderTemperatureOverlay();
+            break;
+          case "wind":
+            renderWindOverlay();
+            break;
+          case "uv":
+            renderUVOverlay();
+            break;
+          case "humidity":
+            renderHumidityOverlay();
+            break;
+          case "moon":
+            renderMoonOverlay();
+            break;
+          case "safety":
+            renderSafetyOverlay();
+            break;
+        }
+      }
+
+      let windMapAnimId = null;
+
+      function closeOverlay() {
+        state.activeOverlay = null;
+        if (windMapAnimId) {
+          cancelAnimationFrame(windMapAnimId);
+          windMapAnimId = null;
+        }
+        el.detailOverlay.classList.add("hidden");
+        document.body.style.overflow = "";
+      }
+
+      // 1. Temperature Detail Overlay
+      function renderTemperatureOverlay() {
+        el.overlayTitle.textContent = state.lang === 'ar' ? 'الحرارة والتوقعات بالساعة' : 'Temperature & Hourly Trend';
+        const cur = state.weatherData.current;
+        const daily = state.weatherData.daily;
+        const unit = state.tempUnit === "f" ? "°F" : "°C";
+
+        let progressionHtml = "";
+        if (state.weatherData.hourly && state.weatherData.hourly.time) {
+          const hourly = state.weatherData.hourly;
+          const nowHour = new Date().getHours();
+          for (let i = 0; i < Math.min(24, hourly.time.length); i++) {
+            const timeStr = hourly.time[i];
+            const hourLabel = i === nowHour ? t("now") : `${new Date(timeStr).getHours()}:00`;
+            const temp = Math.round(hourly.temperature_2m[i]);
+            const code = (hourly.weather_code && hourly.weather_code[i] !== undefined) ? hourly.weather_code[i] : cur.weather_code;
+            const pop = hourly.precipitation_probability ? hourly.precipitation_probability[i] : 0;
+
+            progressionHtml += `
+              <div class="glass-card rounded-xl p-2.5 min-w-[70px] flex flex-col items-center justify-between text-center shrink-0 border border-white/5">
+                <span class="text-[10px] text-slate-400 font-mono">${hourLabel}</span>
+                <div class="my-1.5">${getMiniWeatherIcon(code)}</div>
+                <span class="text-sm font-bold text-white">${temp}°</span>
+                <span class="text-[9px] text-cyan-300/80 font-mono mt-0.5">${pop}%</span>
+              </div>
+            `;
+          }
+        } else if (daily && daily.time) {
+          const daysEn = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+          const daysAr = ["الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"];
+          const days = state.lang === "ar" ? daysAr : daysEn;
+          for (let i = 0; i < Math.min(7, daily.time.length); i++) {
+            const dateObj = new Date(daily.time[i]);
+            const dayName = i === 0 ? t("today") : days[dateObj.getDay()];
+            const code = (daily.weather_code && daily.weather_code[i] !== undefined) ? daily.weather_code[i] : cur.weather_code;
+            const max = Math.round(daily.temperature_2m_max[i]);
+            const min = Math.round(daily.temperature_2m_min[i]);
+            progressionHtml += `
+              <div class="glass-card rounded-xl p-2.5 min-w-[74px] flex flex-col items-center justify-between text-center shrink-0 border border-white/5">
+                <span class="text-[10px] text-slate-400 font-mono">${dayName}</span>
+                <div class="my-1.5">${getMiniWeatherIcon(code)}</div>
+                <span class="text-sm font-bold text-white">${max}°</span>
+                <span class="text-[9px] text-slate-400 font-mono mt-0.5">${min}° min</span>
+              </div>
+            `;
+          }
+        }
+
+        const diurnal = (daily && daily.temperature_2m_max && daily.temperature_2m_min)
+          ? Math.round(daily.temperature_2m_max[0] - daily.temperature_2m_min[0])
+          : 0;
+        const precipDisplay = (daily && daily.precipitation_sum && daily.precipitation_sum[0] !== undefined)
+          ? `${daily.precipitation_sum[0]} mm`
+          : `${cur.precipitation} mm`;
+
+        el.overlayContent.innerHTML = `
+          <!-- Summary card -->
+          <div class="glass-card rounded-2xl p-4 border border-white/10">
+            <div class="flex items-center justify-between">
+              <div>
+                <span class="text-xs text-slate-400">${state.lang === 'ar' ? 'القراءة الحالية' : 'Current Reading'}</span>
+                <div class="text-4xl font-black text-white mt-0.5">${Math.round(cur.temperature_2m)}${unit}</div>
+              </div>
+              <div class="text-right rtl:text-left">
+                <span class="text-xs text-slate-400">${t("feelsLike")}</span>
+                <div class="text-2xl font-bold text-cyan-400 mt-0.5">${Math.round(cur.apparent_temperature)}${unit}</div>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2 mt-4 pt-3 border-t border-white/10 text-xs">
+              <div>
+                <span class="text-slate-400">${state.lang === 'ar' ? 'أعلى حرارة:' : 'Day High:'}</span>
+                <span class="font-bold text-emerald-400 ml-1 rtl:ml-0 rtl:mr-1">${Math.round(daily.temperature_2m_max[0])}${unit}</span>
+              </div>
+              <div>
+                <span class="text-slate-400">${state.lang === 'ar' ? 'أدنى حرارة:' : 'Day Low:'}</span>
+                <span class="font-bold text-blue-400 ml-1 rtl:ml-0 rtl:mr-1">${Math.round(daily.temperature_2m_min[0])}${unit}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 24-Hour / 7-Day Progression Strip -->
+          <div class="glass-card rounded-2xl p-3.5 border border-white/10">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-semibold text-slate-300">${state.lang === 'ar' ? 'مسار درجات الحرارة' : 'Temperature Progression'}</span>
+              <span class="text-[10px] text-slate-400 font-mono">${state.lang === 'ar' ? 'اسحب ›' : 'Scroll ›'}</span>
+            </div>
+            <div class="flex gap-2 overflow-x-auto pb-1">
+              ${progressionHtml}
+            </div>
+          </div>
+
+          <!-- Thermal Breakdown -->
+          <div class="glass-card rounded-2xl p-4 border border-white/10 space-y-2.5 text-xs">
+            <h4 class="font-bold text-white uppercase tracking-wider text-[11px]">${state.lang === 'ar' ? 'تحليل الراحة الحرارية' : 'Thermal Comfort Analysis'}</h4>
+            <div class="flex justify-between py-1 border-b border-white/5">
+              <span class="text-slate-400">${state.lang === 'ar' ? 'الفارق اليومي في درجات الحرارة' : 'Diurnal Range'}</span>
+              <span class="font-bold text-white">${diurnal}°</span>
+            </div>
+            <div class="flex justify-between py-1 border-b border-white/5">
+              <span class="text-slate-400">${state.lang === 'ar' ? 'مجموع هطول الأمطار اليوم' : 'Precipitation Today'}</span>
+              <span class="font-bold text-cyan-300">${precipDisplay}</span>
+            </div>
+            <div class="flex justify-between py-1">
+              <span class="text-slate-400">${state.lang === 'ar' ? 'الاستقرار الجوي' : 'Atmospheric Stability'}</span>
+              <span class="font-bold text-slate-200">${state.lang === 'ar' ? 'حالة مستقرة ومعتدلة' : 'Stable barometric condition'}</span>
+            </div>
+          </div>
+        `;
+      }
+
+      // 2. Wind Detail Overlay
+      function renderWindOverlay() {
+        el.overlayTitle.textContent = state.lang === 'ar' ? 'تفاصيل الرياح والهبات' : 'Wind & Atmospheric Flow';
+        const cur = state.weatherData.current;
+        const speed = Math.round(cur.wind_speed_10m);
+        const gusts = Math.round(cur.wind_gusts_10m);
+        const deg = Math.round(cur.wind_direction_10m);
+        const cardinal = getCardinalDirection(deg);
+        const unit = state.tempUnit === "f" ? (state.lang === 'ar' ? 'ميل/س' : 'mph') : (state.lang === 'ar' ? 'كم/س' : 'km/h');
+        const speedKmh = state.tempUnit === "f" ? cur.wind_speed_10m * 1.60934 : cur.wind_speed_10m;
+        const beaufort = getBeaufortScale(speedKmh);
+
+        el.overlayContent.innerHTML = `
+          <!-- Compass Hero -->
+          <div class="glass-card rounded-2xl p-5 border border-white/10 flex flex-col items-center text-center">
+            <div class="relative w-36 h-36 rounded-full border-2 border-white/15 flex items-center justify-center bg-black/40 my-2 shadow-inner">
+              <span class="absolute top-2 text-[9px] font-mono text-cyan-400 font-bold">N</span>
+              <span class="absolute bottom-2 text-[9px] font-mono text-slate-500 font-bold">S</span>
+              <span class="absolute right-2 text-[9px] font-mono text-slate-500 font-bold">E</span>
+              <span class="absolute left-2 text-[9px] font-mono text-slate-500 font-bold">W</span>
+
+              <!-- Needle -->
+              <div class="w-full h-full flex items-center justify-center transition-transform duration-700" style="transform: rotate(${deg}deg);">
+                <svg class="w-16 h-16 text-cyan-400 drop-shadow-[0_0_12px_rgba(0,240,255,0.4)]" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2L17 11H7L12 2Z" fill="#00f0ff"/>
+                  <path d="M12 22L7 13H17L12 22Z" fill="#64748b" opacity="0.6"/>
+                </svg>
+              </div>
+            </div>
+
+            <div class="mt-2">
+              <div class="text-3xl font-black text-white">${speed} <span class="text-base font-normal text-slate-400">${unit}</span></div>
+              <div class="text-sm font-mono text-cyan-300 font-semibold mt-0.5">${state.lang === 'ar' ? 'تهب من' : 'Direction:'} ${cardinal} (${deg}°)</div>
+            </div>
+          </div>
+
+          <!-- Interactive 2D World Wind Map (Requirement 5) -->
+          <div class="glass-card rounded-2xl p-4 border border-white/10 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-semibold uppercase tracking-wider text-slate-300">
+                ${state.lang === 'ar' ? 'خريطة الرياح العالمية التفاعلية (2D)' : 'Interactive 2D World Wind Map'}
+              </span>
+              <span class="text-[9px] font-mono px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
+                ${state.lang === 'ar' ? 'مباشر · تفاعلي' : 'Live · Interactive'}
+              </span>
+            </div>
+
+            <!-- Canvas Container -->
+            <div class="relative overflow-hidden rounded-xl border border-white/10 bg-[#060a14]">
+              <canvas id="world-wind-canvas" class="w-full h-48 block cursor-crosshair touch-none"></canvas>
+            </div>
+
+            <!-- Live Inspector Banner -->
+            <div id="wind-map-tooltip" class="p-2.5 rounded-xl bg-black/40 border border-white/10 flex items-center justify-between text-[11px] font-mono">
+              <span class="text-slate-300">${state.city.name}: <strong class="text-white">${speed} ${unit}</strong> (${cardinal})</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/30" id="wind-map-chip">
+                ${state.city.countryCode || 'LOC'}
+              </span>
+            </div>
+
+            <!-- Color-Coded Wind Scale Legend (Green -> Yellow -> Orange -> Red -> Purple) -->
+            <div class="pt-1">
+              <div class="flex justify-between text-[10px] text-slate-400 mb-1 font-mono">
+                <span>${state.lang === 'ar' ? 'مقياس سرعة الرياح' : 'Global Wind Speed Scale'}</span>
+                <span>${unit}</span>
+              </div>
+              <div class="h-2.5 rounded-full overflow-hidden flex w-full shadow-inner border border-white/10">
+                <div class="bg-emerald-500 flex-1" title="Calm <15"></div>
+                <div class="bg-yellow-400 flex-1" title="Moderate 15-35"></div>
+                <div class="bg-orange-500 flex-1" title="Fresh 35-55"></div>
+                <div class="bg-red-500 flex-1" title="High 55-80"></div>
+                <div class="bg-purple-600 flex-1" title="Extreme >80"></div>
+              </div>
+              <div class="flex justify-between text-[8px] font-mono text-slate-400 mt-1">
+                <span class="text-emerald-400">&lt;15 (${state.lang === 'ar' ? 'هادئ' : 'Calm'})</span>
+                <span class="text-yellow-400">15-35 (${state.lang === 'ar' ? 'معتدل' : 'Mod'})</span>
+                <span class="text-orange-400">35-55 (${state.lang === 'ar' ? 'نشط' : 'Fresh'})</span>
+                <span class="text-red-400">55-80 (${state.lang === 'ar' ? 'قوي' : 'High'})</span>
+                <span class="text-purple-400">&gt;80 (${state.lang === 'ar' ? 'شديد الخطورة' : 'Extreme'})</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Beaufort Scale Details -->
+          <div class="glass-card rounded-2xl p-4 border border-white/10 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">${state.lang === 'ar' ? 'مقياس بوفورت' : 'Beaufort Scale'}</span>
+              <span class="text-xs font-bold font-mono px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">Force ${beaufort.force}</span>
+            </div>
+            <div class="text-base font-bold text-white">${beaufort.desc}</div>
+            <p class="text-xs text-slate-300 leading-relaxed">${beaufort.effect}</p>
+          </div>
+
+          <!-- Extended Wind Metrics -->
+          <div class="glass-card rounded-2xl p-4 border border-white/10 space-y-2.5 text-xs">
+            <h4 class="font-bold text-white uppercase tracking-wider text-[11px]">${state.lang === 'ar' ? 'مؤشرات حركة الرياح' : 'Wind Dynamics'}</h4>
+            <div class="flex justify-between py-1 border-b border-white/5">
+              <span class="text-slate-400">${state.lang === 'ar' ? 'أقصى سرعة للهبات' : 'Max Peak Gusts'}</span>
+              <span class="font-bold text-amber-400">${gusts} ${unit}</span>
+            </div>
+            <div class="flex justify-between py-1 border-b border-white/5">
+              <span class="text-slate-400">${state.lang === 'ar' ? 'السرعة بالعقدة البحرية' : 'Nautical Speed'}</span>
+              <span class="font-mono text-white font-semibold">${(speedKmh * 0.539957).toFixed(1)} knots</span>
+            </div>
+            <div class="flex justify-between py-1">
+              <span class="text-slate-400">${state.lang === 'ar' ? 'السرعة بالمتر في الثانية' : 'Metric Velocity'}</span>
+              <span class="font-mono text-white font-semibold">${(speedKmh / 3.6).toFixed(1)} m/s</span>
+            </div>
+          </div>
+        `;
+
+        // Initialize and animate interactive 2D world wind map (only when overlay is open)
+        initWindWorldMap(cur, speed, unit, speedKmh, deg);
+      }
+
+      function initWindWorldMap(cur, speed, unit, speedKmh, deg) {
+        const canvas = document.getElementById("world-wind-canvas");
+        const tooltip = document.getElementById("wind-map-tooltip");
+        if (!canvas) return;
+
+        if (windMapAnimId) {
+          cancelAnimationFrame(windMapAnimId);
+          windMapAnimId = null;
+        }
+
+        const ctx = canvas.getContext("2d");
+        const rect = canvas.getBoundingClientRect();
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        const w = (canvas.width = (rect.width || 360) * dpr);
+        const h = (canvas.height = (rect.height || 192) * dpr);
+
+        function lonToX(lon) {
+          return ((lon + 180) / 360) * w;
+        }
+        function latToY(lat) {
+          return ((90 - lat) / 180) * h;
+        }
+        function xToLon(x) {
+          return (x / w) * 360 - 180;
+        }
+        function yToLat(y) {
+          return 90 - (y / h) * 180;
+        }
+
+        function getWindColor(spd) {
+          if (spd < 15) return { r: 16, g: 185, b: 129, hex: "#10b981", label: state.lang === 'ar' ? 'هادئ' : 'Calm' };
+          if (spd < 35) return { r: 234, g: 179, b: 8, hex: "#eab308", label: state.lang === 'ar' ? 'معتدل' : 'Moderate' };
+          if (spd < 55) return { r: 249, g: 115, b: 22, hex: "#f97316", label: state.lang === 'ar' ? 'نشط' : 'Fresh' };
+          if (spd < 80) return { r: 239, g: 68, b: 68, hex: "#ef4444", label: state.lang === 'ar' ? 'قوي' : 'High' };
+          return { r: 168, g: 85, b: 247, hex: "#a855f7", label: state.lang === 'ar' ? 'شديد الخطورة' : 'Extreme' };
+        }
+
+        function estimateWindAt(lat, lon) {
+          const absLat = Math.abs(lat);
+          let baseSpd = 12;
+          let dir = 90;
+
+          if (absLat < 25) {
+            baseSpd = 14 + Math.sin(lon * 0.05) * 6;
+            dir = 270;
+          } else if (absLat >= 35 && absLat <= 65) {
+            baseSpd = 38 + Math.cos(lon * 0.04) * 22;
+            if (lat < -40 && lat > -65) baseSpd += 26;
+            dir = 90;
+          } else {
+            baseSpd = 18 + Math.sin(lat * 0.1) * 8;
+            dir = 270;
+          }
+
+          const dLat = lat - state.city.lat;
+          const dLon = lon - state.city.lon;
+          const dist = Math.sqrt(dLat * dLat + dLon * dLon);
+          if (dist < 30) {
+            const factor = Math.max(0, 1 - dist / 30);
+            baseSpd = baseSpd * (1 - factor) + speedKmh * factor;
+            dir = dir * (1 - factor) + deg * factor;
+          }
+
+          return { speed: Math.max(4, Math.round(baseSpd)), dir };
+        }
+
+        // Continents coordinates
+        const continents = [
+          [[-168, 65], [-140, 70], [-100, 72], [-65, 62], [-55, 48], [-75, 35], [-80, 25], [-95, 18], [-105, 23], [-120, 34], [-125, 48], [-165, 58]],
+          [[-50, 82], [-20, 80], [-25, 70], [-45, 60], [-55, 70]],
+          [[-78, 10], [-50, -2], [-35, -7], [-40, -22], [-55, -35], [-68, -54], [-75, -45], [-72, -18], [-80, -2]],
+          [[-10, 36], [-5, 44], [5, 48], [15, 55], [25, 71], [15, 68], [10, 56], [2, 51], [-3, 40]],
+          [[-15, 30], [10, 37], [32, 32], [50, 12], [42, -5], [35, -28], [20, -35], [12, -18], [10, 5], [-16, 12]],
+          [[30, 40], [50, 48], [80, 55], [120, 60], [170, 68], [140, 45], [120, 35], [105, 20], [80, 15], [70, 25], [45, 35]],
+          [[70, 22], [80, 28], [90, 24], [100, 15], [105, 10], [98, 2], [82, 8]],
+          [[115, -22], [130, -12], [142, -12], [152, -26], [150, -38], [135, -36], [115, -34]],
+          [[-180, -75], [180, -75], [180, -90], [-180, -90]]
+        ];
+
+        // 65 particles
+        const particles = [];
+        for (let i = 0; i < 65; i++) {
+          particles.push({
+            x: Math.random() * w,
+            y: Math.random() * h,
+            age: Math.floor(Math.random() * 80),
+            maxAge: 70 + Math.floor(Math.random() * 50)
+          });
+        }
+
+        let inspected = {
+          lat: state.city.lat,
+          lon: state.city.lon,
+          active: false
+        };
+
+        function handlePointer(e) {
+          const b = canvas.getBoundingClientRect();
+          const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+          const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+          const px = ((clientX - b.left) / b.width) * w;
+          const py = ((clientY - b.top) / b.height) * h;
+          const lat = Math.max(-85, Math.min(85, yToLat(py)));
+          const lon = Math.max(-180, Math.min(180, xToLon(px)));
+          inspected = { lat, lon, active: true };
+
+          const est = estimateWindAt(lat, lon);
+          const spdDisplay = state.tempUnit === "f" ? Math.round(est.speed * 0.621371) : est.speed;
+          const infoColor = getWindColor(est.speed);
+
+          tooltip.innerHTML = `
+            <span class="text-slate-300">Lat ${lat.toFixed(1)}°, Lon ${lon.toFixed(1)}°: <strong class="text-white">${spdDisplay} ${unit}</strong> (${getCardinalDirection(est.dir)})</span>
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold" style="background:${infoColor.hex}22; color:${infoColor.hex}; border:1px solid ${infoColor.hex}55">
+              ${infoColor.label}
+            </span>
+          `;
+        }
+
+        canvas.addEventListener("pointerdown", handlePointer);
+        canvas.addEventListener("pointermove", (e) => {
+          if (e.buttons === 1) handlePointer(e);
+        });
+
+        let pulse = 0;
+
+        function draw() {
+          pulse += 0.05;
+          ctx.clearRect(0, 0, w, h);
+
+          // Ocean background
+          ctx.fillStyle = "#070e1c";
+          ctx.fillRect(0, 0, w, h);
+
+          // Grid lines
+          ctx.strokeStyle = "rgba(255, 255, 255, 0.04)";
+          ctx.lineWidth = 1;
+          [30, 0, -30, -60].forEach(lat => {
+            const y = latToY(lat);
+            ctx.beginPath();
+            ctx.moveTo(0, y);
+            ctx.lineTo(w, y);
+            ctx.stroke();
+          });
+
+          // Equator dashed
+          ctx.strokeStyle = "rgba(0, 240, 255, 0.12)";
+          ctx.setLineDash([4, 4]);
+          ctx.beginPath();
+          ctx.moveTo(0, latToY(0));
+          ctx.lineTo(w, latToY(0));
+          ctx.stroke();
+          ctx.setLineDash([]);
+
+          // Continents
+          ctx.fillStyle = "#111a2d";
+          ctx.strokeStyle = "rgba(71, 85, 105, 0.35)";
+          ctx.lineWidth = 1 * dpr;
+
+          continents.forEach(poly => {
+            ctx.beginPath();
+            poly.forEach((pt, idx) => {
+              const x = lonToX(pt[0]);
+              const y = latToY(pt[1]);
+              if (idx === 0) ctx.moveTo(x, y);
+              else ctx.lineTo(x, y);
+            });
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+          });
+
+          // Particles
+          particles.forEach(p => {
+            const lat = yToLat(p.y);
+            const lon = xToLon(p.x);
+            const est = estimateWindAt(lat, lon);
+            const color = getWindColor(est.speed);
+
+            const rad = (est.dir * Math.PI) / 180;
+            const velocity = (est.speed / 60) * 1.5 * dpr;
+            const dx = Math.sin(rad) * velocity;
+            const dy = -Math.cos(rad) * velocity;
+
+            ctx.strokeStyle = `rgba(${color.r}, ${color.g}, ${color.b}, ${Math.sin((p.age / p.maxAge) * Math.PI) * 0.85})`;
+            ctx.lineWidth = (est.speed > 55 ? 2.2 : 1.4) * dpr;
+            ctx.lineCap = "round";
+
+            ctx.beginPath();
+            ctx.moveTo(p.x, p.y);
+            ctx.lineTo(p.x - dx * 4, p.y - dy * 4);
+            ctx.stroke();
+
+            p.x += dx;
+            p.y += dy;
+            p.age++;
+
+            if (p.age >= p.maxAge || p.x < 0 || p.x > w || p.y < 0 || p.y > h) {
+              p.x = Math.random() * w;
+              p.y = Math.random() * h;
+              p.age = 0;
+            }
+          });
+
+          // City Marker
+          const cityX = lonToX(state.city.lon);
+          const cityY = latToY(state.city.lat);
+
+          const ringR = (8 + Math.sin(pulse) * 4) * dpr;
+          ctx.strokeStyle = "rgba(0, 240, 255, 0.4)";
+          ctx.lineWidth = 1.5 * dpr;
+          ctx.beginPath();
+          ctx.arc(cityX, cityY, ringR, 0, Math.PI * 2);
+          ctx.stroke();
+
+          ctx.fillStyle = "#00f0ff";
+          ctx.beginPath();
+          ctx.arc(cityX, cityY, 3.5 * dpr, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.fillStyle = "rgba(10, 16, 30, 0.85)";
+          ctx.strokeStyle = "rgba(0, 240, 255, 0.5)";
+          ctx.lineWidth = 1 * dpr;
+          const tagW = 75 * dpr;
+          const tagH = 16 * dpr;
+          let tagX = cityX + 6 * dpr;
+          let tagY = cityY - 8 * dpr;
+          if (tagX + tagW > w - 10) tagX = cityX - tagW - 6 * dpr;
+
+          ctx.fillRect(tagX, tagY, tagW, tagH);
+          ctx.strokeRect(tagX, tagY, tagW, tagH);
+
+          ctx.fillStyle = "#ffffff";
+          ctx.font = `bold ${8 * dpr}px monospace`;
+          ctx.fillText(`${state.city.name.substring(0, 8)}: ${speed}${unit}`, tagX + 4 * dpr, tagY + 11 * dpr);
+
+          if (inspected.active) {
+            const ix = lonToX(inspected.lon);
+            const iy = latToY(inspected.lat);
+            ctx.strokeStyle = "rgba(255, 255, 255, 0.9)";
+            ctx.lineWidth = 1 * dpr;
+            ctx.beginPath();
+            ctx.arc(ix, iy, 5 * dpr, 0, Math.PI * 2);
+            ctx.stroke();
+          }
+        }
+
+        function animLoop() {
+          if (state.activeOverlay !== "wind") return;
+          draw();
+          windMapAnimId = requestAnimationFrame(animLoop);
+        }
+
+        windMapAnimId = requestAnimationFrame(animLoop);
+      }
+
+      // 3. UV Index Detail Overlay
+      function renderUVOverlay() {
+        el.overlayTitle.textContent = state.lang === 'ar' ? 'مؤشر الأشعة فوق البنفسجية' : 'UV Index & Sun Protection';
+        const cur = state.weatherData.current;
+        const daily = state.weatherData.daily;
+        // Requirement 2: True live peak value from daily forecast array
+        const uv = (daily && daily.uv_index_max && daily.uv_index_max[0] !== undefined)
+          ? Number(daily.uv_index_max[0].toFixed(1))
+          : (cur.uv_index !== undefined ? Number(cur.uv_index.toFixed(1)) : 0);
+        const maxUV = uv;
+        const level = getUVLevel(uv);
+
+        let burnTime = state.lang === 'ar' ? "أكثر من 60 دقيقة" : "Over 60 mins";
+        if (uv > 10) burnTime = state.lang === 'ar' ? "~10 دقائق" : "~10 mins";
+        else if (uv >= 8) burnTime = state.lang === 'ar' ? "~15 دقيقة" : "~15 mins";
+        else if (uv >= 6) burnTime = state.lang === 'ar' ? "~25 دقيقة" : "~25 mins";
+        else if (uv >= 3) burnTime = state.lang === 'ar' ? "~45 دقيقة" : "~45 mins";
+
+        el.overlayContent.innerHTML = `
+          <!-- UV Rating Hero -->
+          <div class="glass-card rounded-2xl p-5 border border-white/10 flex items-center justify-between">
+            <div>
+              <span class="text-xs text-slate-400 uppercase tracking-wider">${state.lang === 'ar' ? 'المؤشر الحالي' : 'Current UV Index'}</span>
+              <div class="text-5xl font-black text-white mt-1">${uv}</div>
+              <div class="text-sm font-bold ${level.color} mt-1">${level.text}</div>
+            </div>
+            <div class="w-16 h-16 rounded-2xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400">
+              <svg class="w-9 h-9" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+              </svg>
+            </div>
+          </div>
+
+          <!-- WHO Standard Scale -->
+          <div class="glass-card rounded-2xl p-4 border border-white/10 space-y-2">
+            <div class="flex justify-between text-xs">
+              <span class="text-slate-400">${state.lang === 'ar' ? 'مقياس التعرض الشمسي' : 'Solar Exposure Scale'}</span>
+              <span class="text-white font-mono font-bold">${state.lang === 'ar' ? 'الذروة اليوم:' : 'Peak Today:'} ${maxUV}</span>
+            </div>
+            <div class="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden flex">
+              <div class="bg-emerald-400 h-full w-[25%]" title="Low"></div>
+              <div class="bg-amber-400 h-full w-[25%]" title="Moderate"></div>
+              <div class="bg-orange-500 h-full w-[25%]" title="High"></div>
+              <div class="bg-rose-500 h-full w-[15%]" title="Very High"></div>
+              <div class="bg-purple-600 h-full w-[10%]" title="Extreme"></div>
+            </div>
+            <div class="flex justify-between text-[9px] font-mono text-slate-500 pt-0.5">
+              <span>0 (${state.lang === 'ar' ? 'خفيف' : 'Low'})</span>
+              <span>3 (${state.lang === 'ar' ? 'متوسط' : 'Mod'})</span>
+              <span>6 (${state.lang === 'ar' ? 'عالي' : 'High'})</span>
+              <span>8 (${state.lang === 'ar' ? 'شديد' : 'Very High'})</span>
+              <span>11+</span>
+            </div>
+          </div>
+
+          <!-- Sun Safety Checklist -->
+          <div class="glass-card rounded-2xl p-4 border border-white/10 space-y-2.5 text-xs">
+            <h4 class="font-bold text-white uppercase tracking-wider text-[11px]">${state.lang === 'ar' ? 'إرشادات الوقاية والحماية' : 'Recommended Protection'}</h4>
+            <div class="flex items-start gap-2.5 py-1">
+              <span class="text-amber-400 font-bold">✓</span>
+              <span class="text-slate-200">${state.lang === 'ar' ? 'استخدم واقي شمس مناسب عند البقاء خارجاً لأكثر من 30 دقيقة.' : 'Sunscreen SPF 30+: Apply generously when outdoors.'}</span>
+            </div>
+            <div class="flex items-start gap-2.5 py-1">
+              <span class="text-amber-400 font-bold">✓</span>
+              <span class="text-slate-200">${state.lang === 'ar' ? 'ارتدِ نظارات شمسية وقبعة لحماية العين والرأس.' : 'UV400 Sunglasses & Wide-Brim Hat recommended.'}</span>
+            </div>
+            <div class="flex items-start gap-2.5 py-1">
+              <span class="text-amber-400 font-bold">✓</span>
+              <span class="text-slate-200">${state.lang === 'ar' ? 'وقت التعرض الآمن بدون حماية:' : 'Estimated safe exposure time:'} <strong class="text-white">${burnTime}</strong>.</span>
+            </div>
+          </div>
+        `;
+      }
+
+      // 4. Humidity Detail Overlay
+      function renderHumidityOverlay() {
+        el.overlayTitle.textContent = state.lang === 'ar' ? 'تفاصيل الرطوبة ونقطة الندى' : 'Humidity & Moisture Details';
+        const cur = state.weatherData.current;
+        const hum = cur.relative_humidity_2m;
+        const temp = cur.temperature_2m;
+        const dew = Math.round(temp - ((100 - hum) / 5));
+        const unit = state.tempUnit === "f" ? "°F" : "°C";
+
+        let comfortCategory = state.lang === 'ar' ? 'مستوى مريح' : 'Comfortable';
+        let comfortDesc = state.lang === 'ar' ? 'نسبة رطوبة متوازنة ومريحة للتنفس والجلد.' : 'Optimal relative moisture for skin and lung comfort.';
+        if (hum < 30) {
+          comfortCategory = state.lang === 'ar' ? 'هواء جاف' : 'Dry Air';
+          comfortDesc = state.lang === 'ar' ? 'قد يسبب جفاف الجلد أو الحلق. احرص على شرب السوائل.' : 'Dry conditions may cause throat dryness. Hydrate regularly.';
+        } else if (hum > 75) {
+          comfortCategory = state.lang === 'ar' ? 'رطوبة عالية خانقة' : 'Muggy / Oppressive';
+          comfortDesc = state.lang === 'ar' ? 'ارتفاع الرطوبة يعيق التبريد الطبيعي للجسم بالتعرق.' : 'High moisture reduces body evaporative cooling.';
+        } else if (hum > 60) {
+          comfortCategory = state.lang === 'ar' ? 'رطوبة ملحوظة' : 'Slightly Humid';
+          comfortDesc = state.lang === 'ar' ? 'رطوبة جوية واضحة ولكن مقبولة.' : 'Noticeable atmospheric moisture in the air.';
+        }
+
+        el.overlayContent.innerHTML = `
+          <!-- Gauge Card -->
+          <div class="glass-card rounded-2xl p-5 border border-white/10 flex items-center justify-between">
+            <div>
+              <span class="text-xs text-slate-400 uppercase tracking-wider">${state.lang === 'ar' ? 'الرطوبة النسبية' : 'Relative Humidity'}</span>
+              <div class="text-5xl font-black text-white mt-1">${hum}<span class="text-2xl font-light text-slate-400">%</span></div>
+              <div class="text-sm font-bold text-sky-400 mt-1">${comfortCategory}</div>
+            </div>
+            <div class="w-16 h-16 rounded-2xl bg-sky-500/15 border border-sky-500/30 flex items-center justify-center text-sky-400">
+              <svg class="w-9 h-9" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+              </svg>
+            </div>
+          </div>
+
+          <!-- Dew Point & Vapor Insight -->
+          <div class="glass-card rounded-2xl p-4 border border-white/10 space-y-2.5 text-xs">
+            <h4 class="font-bold text-white uppercase tracking-wider text-[11px]">${state.lang === 'ar' ? 'خصائص الهواء وبخار الماء' : 'Moisture Properties'}</h4>
+            <div class="flex justify-between py-1 border-b border-white/5">
+              <span class="text-slate-400">${state.lang === 'ar' ? 'درجة حرارة نقطة الندى' : 'Dew Point Temperature'}</span>
+              <span class="font-bold text-cyan-300">${dew}${unit}</span>
+            </div>
+            <div class="flex justify-between py-1 border-b border-white/5">
+              <span class="text-slate-400">${state.lang === 'ar' ? 'كمية التساقط المطري' : 'Precipitation Level'}</span>
+              <span class="font-bold text-white">${cur.precipitation} mm</span>
+            </div>
+            <p class="text-slate-300 leading-relaxed pt-1">${comfortDesc}</p>
+          </div>
+        `;
+      }
+
+      // 5. Moon Phase & Astronomy Detail Overlay
+      function renderMoonOverlay() {
+        el.overlayTitle.textContent = state.lang === 'ar' ? 'علم الفلك وأطوار القمر' : 'Astronomy & Moon Phase';
+        const daily = state.weatherData.daily;
+        const moon = calculateMoonPhase();
+
+        let sunriseStr = "--:--";
+        let sunsetStr = "--:--";
+        if (daily && daily.sunrise && daily.sunrise[0]) {
+          const sr = new Date(daily.sunrise[0]);
+          sunriseStr = `${String(sr.getHours()).padStart(2, '0')}:${String(sr.getMinutes()).padStart(2, '0')}`;
+        } else {
+          sunriseStr = estimateSunTimes(state.city.lat, state.city.lon).sunrise;
+        }
+        if (daily && daily.sunset && daily.sunset[0]) {
+          const ss = new Date(daily.sunset[0]);
+          sunsetStr = `${String(ss.getHours()).padStart(2, '0')}:${String(ss.getMinutes()).padStart(2, '0')}`;
+        } else {
+          sunsetStr = estimateSunTimes(state.city.lat, state.city.lon).sunset;
+        }
+
+        el.overlayContent.innerHTML = `
+          <!-- Celestial Moon Visual -->
+          <div class="glass-card rounded-2xl p-6 border border-white/10 flex flex-col items-center text-center">
+            <div class="my-2 p-3 rounded-full bg-slate-900/60 border border-amber-200/20 shadow-[0_0_25px_rgba(253,230,138,0.15)]">
+              ${renderMoonSVG(moon.index, moon.illumination)}
+            </div>
+            <div class="text-2xl font-black text-white mt-2">${moon.name}</div>
+            <div class="text-sm font-mono text-amber-200 mt-0.5">${moon.illumination}% ${state.lang === 'ar' ? 'نسبة الإضاءة' : 'Illumination'}</div>
+            <div class="text-xs text-slate-400 mt-1 font-mono">${state.lang === 'ar' ? 'اليوم' : 'Day'} ${moon.ageDays} ${state.lang === 'ar' ? 'من الدورة القمرية (29.5 يوم)' : 'of 29.5-day synodic cycle'}</div>
+          </div>
+
+          <!-- Sun & Twilight Cycles -->
+          <div class="glass-card rounded-2xl p-4 border border-white/10 space-y-3 text-xs">
+            <h4 class="font-bold text-white uppercase tracking-wider text-[11px]">${state.lang === 'ar' ? 'مواقيت الشروق والغروب' : 'Solar & Ephemeris Schedule'}</h4>
+            <div class="grid grid-cols-2 gap-3">
+              <div class="glass-panel p-3 rounded-xl border border-white/5">
+                <span class="text-slate-400">${state.lang === 'ar' ? 'شروق الشمس' : 'Sunrise'}</span>
+                <div class="text-lg font-bold text-amber-400 font-mono mt-0.5">${sunriseStr}</div>
+              </div>
+              <div class="glass-panel p-3 rounded-xl border border-white/5">
+                <span class="text-slate-400">${state.lang === 'ar' ? 'غروب الشمس' : 'Sunset'}</span>
+                <div class="text-lg font-bold text-indigo-300 font-mono mt-0.5">${sunsetStr}</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Stargazing Outlook -->
+          <div class="glass-card rounded-2xl p-4 border border-white/10 space-y-2 text-xs">
+            <h4 class="font-bold text-white uppercase tracking-wider text-[11px]">${state.lang === 'ar' ? 'مؤشر مراقبة النجوم' : 'Stargazing Index'}</h4>
+            <p class="text-slate-300 leading-relaxed">
+              ${moon.illumination > 75 
+                ? (state.lang === 'ar' ? 'ضوء القمر القوي يقلل وضوح النجوم الخافتة والمجرات. مناسب لمشاهدة فوهات القمر.' : 'Bright moonlight washes out faint deep-sky nebulae. Ideal for lunar crater observation.')
+                : (state.lang === 'ar' ? 'ضوء القمر الخافت يوفر تباين سماء مظلمة رائع لمشاهدة مجرة درب التبانة والنجوم.' : 'Low moonlight provides excellent dark sky contrast for star clusters and Milky Way visibility.')}
+            </p>
+          </div>
+        `;
+      }
+
+      // 6. Outdoor Safety Detail Overlay
+      function renderSafetyOverlay() {
+        el.overlayTitle.textContent = state.lang === 'ar' ? 'الأنشطة والسلامة الخارجية' : 'Outdoor Activities & Safety';
+        const cur = state.weatherData.current;
+        const daily = state.weatherData.daily;
+        const tempC = state.tempUnit === "f" ? (cur.temperature_2m - 32) * 5 / 9 : cur.temperature_2m;
+        const windKmh = state.tempUnit === "f" ? cur.wind_speed_10m * 1.60934 : cur.wind_speed_10m;
+        const uvVal = (daily && daily.uv_index_max && daily.uv_index_max[0] !== undefined)
+          ? Number(daily.uv_index_max[0].toFixed(1))
+          : (cur.uv_index !== undefined ? Number(cur.uv_index.toFixed(1)) : 0);
+        const safety = computeOutdoorSafety(tempC, windKmh, cur.precipitation, cur.weather_code, uvVal);
+
+        let runScore = Math.max(10, Math.min(100, Math.round(100 - Math.abs(tempC - 16) * 2.5 - (windKmh > 25 ? windKmh : 0))));
+        let cycleScore = Math.max(10, Math.min(100, Math.round(100 - (windKmh * 1.4) - (cur.precipitation > 0 ? 35 : 0))));
+        let diningScore = Math.max(10, Math.min(100, Math.round(100 - Math.abs(tempC - 22) * 3 - (cur.precipitation > 0 ? 60 : 0))));
+
+        el.overlayContent.innerHTML = `
+          <!-- Score Badge -->
+          <div class="glass-card rounded-2xl p-5 border border-white/10 flex items-center justify-between">
+            <div>
+              <span class="text-xs text-slate-400 uppercase tracking-wider">${state.lang === 'ar' ? 'التقييم العام للسلامة' : 'Overall Safety Rating'}</span>
+              <div class="text-5xl font-black text-white mt-1">${safety.score}<span class="text-lg font-light text-slate-400">/100</span></div>
+              <div class="text-sm font-bold text-emerald-400 mt-1">${safety.title}</div>
+            </div>
+            <div class="w-16 h-16 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 font-mono text-2xl font-black">
+              ${safety.score}
+            </div>
+          </div>
+
+          <!-- Activity Feasibility Breakdown -->
+          <div class="glass-card rounded-2xl p-4 border border-white/10 space-y-3 text-xs">
+            <h4 class="font-bold text-white uppercase tracking-wider text-[11px]">${state.lang === 'ar' ? 'ملاءمة الأنشطة الخارجية' : 'Activity Suitability'}</h4>
+
+            <!-- Running -->
+            <div>
+              <div class="flex justify-between py-1 font-semibold">
+                <span class="text-slate-300">${state.lang === 'ar' ? 'الجري والركض' : 'Jogging & Running'}</span>
+                <span class="font-mono text-cyan-300">${runScore}%</span>
+              </div>
+              <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                <div class="bg-cyan-400 h-full rounded-full" style="width: ${runScore}%;"></div>
+              </div>
+            </div>
+
+            <!-- Cycling -->
+            <div>
+              <div class="flex justify-between py-1 font-semibold">
+                <span class="text-slate-300">${state.lang === 'ar' ? 'ركوب الدراجات الهوائية' : 'Road Cycling'}</span>
+                <span class="font-mono text-emerald-400">${cycleScore}%</span>
+              </div>
+              <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                <div class="bg-emerald-400 h-full rounded-full" style="width: ${cycleScore}%;"></div>
+              </div>
+            </div>
+
+            <!-- Outdoor Dining -->
+            <div>
+              <div class="flex justify-between py-1 font-semibold">
+                <span class="text-slate-300">${state.lang === 'ar' ? 'الجلوس في الهواء الطلق والمطاعم' : 'Outdoor Dining & Patios'}</span>
+                <span class="font-mono text-amber-300">${diningScore}%</span>
+              </div>
+              <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                <div class="bg-amber-400 h-full rounded-full" style="width: ${diningScore}%;"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Advisory Guidance -->
+          <div class="glass-card rounded-2xl p-4 border border-white/10 space-y-2 text-xs">
+            <h4 class="font-bold text-white uppercase tracking-wider text-[11px]">${state.lang === 'ar' ? 'نصيحة السلامة' : 'Safety Advisory'}</h4>
+            <p class="text-slate-300 leading-relaxed">${safety.desc}</p>
+          </div>
+        `;
+      }
+
+      // ==========================================
+      // GLOBAL SEARCH (Open-Meteo Geocoding API)
+      // Zero pin-point/map-pin emojis anywhere
+      // Proper city names strictly preserved in original spelling
+      // ==========================================
+
+      let searchDebounce = null;
+      el.searchInput.addEventListener("input", (e) => {
+        const query = e.target.value.trim();
+        if (query.length > 0) {
+          el.clearSearchBtn.classList.remove("hidden");
+        } else {
+          el.clearSearchBtn.classList.add("hidden");
+          el.searchResultsDropdown.classList.add("hidden");
+          return;
+        }
+
+        clearTimeout(searchDebounce);
+        if (query.length < 2) return;
+
+        searchDebounce = setTimeout(() => {
+          performGlobalSearch(query);
+        }, 240);
+      });
+
+      el.clearSearchBtn.addEventListener("click", () => {
+        el.searchInput.value = "";
+        el.clearSearchBtn.classList.add("hidden");
+        el.searchResultsDropdown.classList.add("hidden");
+      });
+
+      async function performGlobalSearch(query) {
+        try {
+          const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=10&language=en`);
+          if (!res.ok) return;
+          const data = await res.json();
+          renderSearchResults(data.results || []);
+        } catch (e) {
+          // Ignore network errors gracefully
+        }
+      }
+
+      function renderSearchResults(results) {
+        if (!results || results.length === 0) {
+          el.searchResultsList.innerHTML = `<div class="p-3 text-xs text-slate-400 text-center">${t("noLocationsFound")}</div>`;
+          el.searchResultsDropdown.classList.remove("hidden");
+          return;
+        }
+
+        let html = "";
+        results.forEach(item => {
+          const region = item.admin1 ? `${item.admin1}, ` : "";
+          const country = item.country || "";
+          const countryCode = item.country_code || "DZ";
+
+          // Notice: Clean typography, zero map pins / emojis
+          html += `
+            <div class="search-item px-3 py-2.5 rounded-lg hover:bg-cyan-500/10 active:bg-cyan-500/20 cursor-pointer flex items-center justify-between text-left rtl:text-right transition-colors border border-transparent hover:border-cyan-500/20"
+                 data-city="${item.name}"
+                 data-country="${country}"
+                 data-countrycode="${countryCode}"
+                 data-region="${region}${country}"
+                 data-lat="${item.latitude}"
+                 data-lon="${item.longitude}">
+              <div class="overflow-hidden pr-2 rtl:pr-0 rtl:pl-2">
+                <div class="text-xs font-bold text-white truncate">${item.name}</div>
+                <div class="text-[10px] text-slate-400 truncate">${region}${country}</div>
+              </div>
+              <span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-white/5 text-slate-300 border border-white/10 shrink-0">${countryCode}</span>
+            </div>
+          `;
+        });
+
+        el.searchResultsList.innerHTML = html;
+        el.searchResultsDropdown.classList.remove("hidden");
+
+        // Click on search result -> selects city as active default & saves to localStorage (Requirement 3)
+        document.querySelectorAll(".search-item").forEach(item => {
+          item.addEventListener("click", () => {
+            const selectedCity = {
+              name: item.getAttribute("data-city"),
+              country: item.getAttribute("data-country"),
+              countryCode: item.getAttribute("data-countrycode"),
+              region: item.getAttribute("data-region"),
+              lat: parseFloat(item.getAttribute("data-lat")),
+              lon: parseFloat(item.getAttribute("data-lon"))
+            };
+
+            // Selected city automatically becomes the active default city (saved to localStorage)
+            state.city = selectedCity;
+            localStorage.setItem("wx_selected_city", JSON.stringify(selectedCity));
+
+            el.searchInput.value = "";
+            el.clearSearchBtn.classList.add("hidden");
+            el.searchResultsDropdown.classList.add("hidden");
+
+            fetchWeather();
+          });
+        });
+      }
+
+      // Close dropdown when clicking outside
+      document.addEventListener("click", (e) => {
+        if (!el.searchInput.contains(e.target) && !el.searchResultsDropdown.contains(e.target)) {
+          el.searchResultsDropdown.classList.add("hidden");
+        }
+      });
+
+      // Settings Modal Open / Close
+      el.openSettingsBtn.addEventListener("click", () => {
+        el.settingsModal.classList.remove("hidden");
+        document.body.style.overflow = "hidden";
+      });
+
+      el.closeSettingsBackBtn.addEventListener("click", () => {
+        el.settingsModal.classList.add("hidden");
+        document.body.style.overflow = "";
+      });
+
+      // Settings: Unit Toggle
+      el.settingUnitC.addEventListener("click", () => {
+        if (state.tempUnit !== "c") {
+          state.tempUnit = "c";
+          localStorage.setItem("wx_unit", "c");
+          updateSettingsModalStyles();
+          fetchWeather();
+        }
+      });
+
+      el.settingUnitF.addEventListener("click", () => {
+        if (state.tempUnit !== "f") {
+          state.tempUnit = "f";
+          localStorage.setItem("wx_unit", "f");
+          updateSettingsModalStyles();
+          fetchWeather();
+        }
+      });
+
+      // Settings: Language Toggle
+      el.settingLangEn.addEventListener("click", () => {
+        if (state.lang !== "en") {
+          state.lang = "en";
+          localStorage.setItem("wx_lang", "en");
+          updateUITexts();
+        }
+      });
+
+      el.settingLangAr.addEventListener("click", () => {
+        if (state.lang !== "ar") {
+          state.lang = "ar";
+          localStorage.setItem("wx_lang", "ar");
+          updateUITexts();
+        }
+      });
+
+      // On-demand refresh button
+      el.refreshBtn.addEventListener("click", () => {
+        fetchWeather();
+      });
+
+      // Retry button on network error
+      el.retryBtn.addEventListener("click", () => {
+        fetchWeather();
+      });
+
+      // Interactive Card Clicks -> Open Full Interface Overlays
+      el.cardTemp.addEventListener("click", () => openOverlay("temperature"));
+      el.cardWind.addEventListener("click", () => openOverlay("wind"));
+      el.cardUV.addEventListener("click", () => openOverlay("uv"));
+      el.cardHumidity.addEventListener("click", () => openOverlay("humidity"));
+      el.cardMoon.addEventListener("click", () => openOverlay("moon"));
+      el.cardSafety.addEventListener("click", () => openOverlay("safety"));
+
+      // Requirement 4: ONLY ONE SINGLE BACK BUTTON AT THE TOP
+      el.overlaySingleBackBtn.addEventListener("click", closeOverlay);
+
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+          closeOverlay();
+          el.settingsModal.classList.add("hidden");
+          document.body.style.overflow = "";
+          el.searchResultsDropdown.classList.add("hidden");
+        }
+      });
+
+      // Initialize Application
+      updateUITexts();
+      fetchWeather();
+
+    })();
+  </script>
+</body>
+</html>

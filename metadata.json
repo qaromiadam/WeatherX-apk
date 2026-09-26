@@ -1,0 +1,6 @@
+{
+  "name": "weatherX",
+  "description": "Ultra-lightweight mobile weather app with complete 58 Algeria wilayas coverage, live Open-Meteo data, dynamic weather wallpapers, wind compass, outdoor safety badge, and moon phase.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
