@@ -1,9 +1,8 @@
 name: Build and Release APK
 
 on:
-  push:
-    tags:
-      - 'v*' # Automatically triggers whenever you push a tag like v2.0
+  release:
+    types: [published]
 
 jobs:
   build:
